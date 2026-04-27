@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Manage Users</h2>
+
+<input id="emp_id" placeholder="Employee ID">
+<input id="name" placeholder="Name">
+<input id="pass" placeholder="Password">
+
+<select id="role">
+<option>EMPLOYEE</option>
+<option>ADMIN</option>
+</select>
+
+<button onclick="addUser()">Add</button>
+
+<table id="table"></table>
+
+<script>
+
+function load(){
+fetch('/api/get_users')
+.then(r=>r.json())
+.then(d=>{
+table.innerHTML = d.map(x=>`
+<tr>
+<td>${x.employee_id}</td>
+<td>${x.name}</td>
+<td>${x.role}</td>
+<td><button onclick="del('${x.employee_id}')">Delete</button></td>
+</tr>
+`).join('');
+});
+}
+
+function addUser(){
+fetch('/api/add_user',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({
+emp_id:emp_id.value,
+name:name.value,
+password:pass.value,
+role:role.value
+})
+}).then(()=>load());
+}
+
+function del(id){
+fetch('/api/delete_user?id='+id)
+.then(()=>load());
+}
+
+load();
+
+</script>
+
+</body>
+</html>

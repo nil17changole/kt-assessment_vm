@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Assign Topic to Admin</h2>
+
+<select id="admin"></select>
+<select id="topic"></select>
+
+<button onclick="assign()">Assign</button>
+
+<script>
+
+// load admins
+fetch('/api/get_admins')
+.then(r=>r.json())
+.then(d=>{
+admin.innerHTML = d.map(x=>`
+<option value="${x.id}">${x.name}</option>
+`).join('');
+});
+
+// load topics
+fetch('/api/get_admin_topics')
+.then(r=>r.json())
+.then(d=>{
+topic.innerHTML = d.map(x=>`
+<option value="${x.id}">${x.topic_name}</option>
+`).join('');
+});
+
+function assign(){
+fetch('/api/assign_topic_admin',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({
+admin:admin.value,
+topic:topic.value
+})
+}).then(()=>alert("Assigned"));
+}
+
+</script>
+
+</body>
+</html>

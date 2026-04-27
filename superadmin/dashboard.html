@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div class="sidebar">
+<a href="dashboard.html">Dashboard</a>
+<a href="manage_users.html">Users</a>
+<a href="manage_topics.html">Topics</a>
+</div>
+
+<div class="main">
+<h1>Superadmin Dashboard</h1>
+
+<div id="cards"></div>
+<canvas id="chart"></canvas>
+
+</div>
+
+<script>
+fetch('/api/super_dashboard')
+.then(r=>r.json())
+.then(d=>{
+cards.innerHTML = `
+Users: ${d.users} <br>
+Topics: ${d.topics} <br>
+Questions: ${d.questions} <br>
+Attempts: ${d.attempts}
+`;
+});
+</script>
+
+</body>
+</html>

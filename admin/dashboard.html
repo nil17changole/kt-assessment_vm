@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+<a href="dashboard.html">Dashboard</a>
+<a href="assign.html">Assign</a>
+</div>
+
+<div class="main">
+<h1>Dashboard</h1>
+
+<div id="cards"></div>
+<canvas id="chart"></canvas>
+
+</div>
+
+<script>
+fetch('/api/dashboard')
+.then(r=>r.json())
+.then(d=>{
+cards.innerHTML = `
+Users: ${d.users} <br>
+Attempts: ${d.attempts}
+`;
+
+console.log(d);
+});
+</script>
+
+</body>
+</html>

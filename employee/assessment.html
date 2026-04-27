@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assessment</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:white;}
+.header{display:flex;justify-content:space-between;padding:15px;background:#1e293b;}
+.timer{font-size:20px;color:#22c55e;}
+.container{display:flex;}
+.main{flex:3;padding:30px;}
+.sidebar{flex:1;background:#1e293b;padding:20px;}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.qbox{padding:10px;background:#334155;text-align:center;cursor:pointer;}
+.qbox.active{background:#6366f1;}
+.qbox.answered{background:#22c55e;}
+.qbox.review{background:#f59e0b;}
+label{display:block;margin:10px 0;padding:10px;background:#1e293b;}
+button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer;}
+.next{background:#6366f1;color:white;}
+.reviewBtn{background:#f59e0b;color:white;}
+.submit{background:#22c55e;color:white;width:100%;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h2 id="title"></h2>
+<div class="timer" id="timer"></div>
+</div>
+
+<div class="container">
+
+<div class="main">
+<div id="quiz"></div>
+
+<button class="next" onclick="next()">Next</button>
+<button class="reviewBtn" onclick="markReview()">Mark Review</button>
+</div>
+
+<div class="sidebar">
+<h3>Questions</h3>
+<div class="grid" id="grid"></div>
+
+<button class="submit" onclick="submitQuiz()">Submit</button>
+</div>
+
+</div>
+
+<script>
+
+let questions=[], index=0, answers={}, review={}, submitted=false, time=0;
+
+// LOAD FROM API
+fetch('/api/get_assessment')
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("title").innerText="Assessment: "+d.topic;
+questions = d.questions;
+time = d.duration * 60;
+
+startTimer();
+createGrid();
+loadQ();
+});
+
+// TIMER
+function startTimer(){
+setInterval(()=>{
+if(submitted) return;
+time--;
+
+let m=Math.floor(time/60);
+let s=time%60;
+timer.innerText = `${m}:${s<10?'0':''}${s}`;
+
+if(time<=0){
+alert("Time up!");
+submitQuiz();
+}
+},1000);
+}
+
+// LOAD QUESTION
+function loadQ(){
+let q=questions[index];
+
+quiz.innerHTML=`
+<h3>${index+1}. ${q.question}</h3>
+${['A','B','C','D'].map(o=>`
+<label>
+<input type="radio" name="ans" value="${o}"
+${answers[index]==o?'checked':''}>
+${q['option_'+o.toLowerCase()]}
+</label>`).join('')}
+`;
+
+updateGrid();
+}
+
+// SAVE
+function save(){
+let sel=document.querySelector('input[name="ans"]:checked');
+if(sel) answers[index]=sel.value;
+}
+
+// NEXT
+function next(){
+save();
+if(index<questions.length-1){ index++; loadQ(); }
+}
+
+// REVIEW
+function markReview(){
+review[index]=true;
+updateGrid();
+}
+
+// GRID
+function createGrid(){
+grid.innerHTML = questions.map((_,i)=>
+`<div class="qbox" onclick="go(${i})" id="q${i}">${i+1}</div>`
+).join('');
+}
+
+function updateGrid(){
+questions.forEach((_,i)=>{
+let box=document.getElementById("q"+i);
+box.className="qbox";
+if(i==index) box.classList.add("active");
+if(answers[i]) box.classList.add("answered");
+if(review[i]) box.classList.add("review");
+});
+}
+
+// NAV
+function go(i){ save(); index=i; loadQ(); }
+
+// SUBMIT
+function submitQuiz(){
+if(submitted) return;
+submitted=true;
+save();
+
+fetch('/api/submit',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({
+answers,
+questions,
+time_taken: (time)
+})
+})
+.then(r=>r.json())
+.then(d=>{
+alert("Score: "+d.score+"%");
+window.location='/login.html';
+});
+}
+
+// ANTI-CHEAT
+document.addEventListener("visibilitychange", ()=>{
+if(document.hidden && !submitted){
+alert("Tab switch not allowed");
+submitQuiz();
+}
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<select id="topic"></select>
+<table id="table"></table>
+
+<script>
+
+fetch('/api/get_admin_topics')
+.then(r=>r.json())
+.then(d=>{
+topic.innerHTML = d.map(t=>`<option value="${t.id}">${t.topic_name}</option>`).join('');
+});
+
+topic.onchange = ()=>{
+fetch('/api/get_questions?topic='+topic.value)
+.then(r=>r.json())
+.then(d=>{
+table.innerHTML = d.map(q=>`
+<tr>
+<td>${q.question}</td>
+<td>
+<button onclick="edit(${q.id})">Edit</button>
+<button onclick="del(${q.id})">Delete</button>
+</td>
+</tr>
+`).join('');
+});
+};
+
+function edit(id){
+location='edit_question.html?id='+id;
+}
+
+function del(id){
+fetch('/api/delete_question?id='+id).then(()=>location.reload());
+}
+
+</script>
+
+</body>
+</html>

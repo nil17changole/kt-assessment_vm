@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<input id="q">
+<input id="a">
+<input id="b">
+<input id="c">
+<input id="d">
+
+<select id="ans">
+<option>A</option>
+<option>B</option>
+<option>C</option>
+<option>D</option>
+</select>
+
+<button onclick="save()">Update</button>
+
+<script>
+
+const id = new URLSearchParams(location.search).get('id');
+
+fetch('/api/get_question?id='+id)
+.then(r=>r.json())
+.then(d=>{
+q.value=d.question;
+a.value=d.option_a;
+b.value=d.option_b;
+c.value=d.option_c;
+d.value=d.option_d;
+});
+
+function save(){
+fetch('/api/update_question',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({
+id:id,
+question:q.value,
+a:a.value,
+b:b.value,
+c:c.value,
+d:d.value,
+ans:ans.value
+})
+}).then(()=>history.back());
+}
+
+</script>
+
+</body>
+</html>

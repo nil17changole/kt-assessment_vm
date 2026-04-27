@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Upload Questions</h2>
+
+<input id="topic" placeholder="Topic Name">
+<input type="file" id="file">
+
+<button onclick="upload()">Upload</button>
+
+<script>
+
+function upload(){
+
+let formData = new FormData();
+formData.append("topic", topic.value);
+formData.append("file", file.files[0]);
+
+fetch('/api/upload_questions',{
+method:'POST',
+body: formData
+})
+.then(()=>alert("Uploaded"));
+}
+
+</script>
+
+</body>
+</html>

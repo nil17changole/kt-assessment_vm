@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Manage Topics</h2>
+
+<input id="topicName" placeholder="Topic Name">
+<button onclick="add()">Add</button>
+
+<table id="table"></table>
+
+<script>
+
+function load(){
+fetch('/api/get_admin_topics')
+.then(r=>r.json())
+.then(d=>{
+table.innerHTML = d.map(x=>`
+<tr><td>${x.id}</td><td>${x.topic_name}</td></tr>
+`).join('');
+});
+}
+
+function add(){
+fetch('/api/add_topic',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({name:topicName.value})
+}).then(()=>load());
+}
+
+load();
+
+</script>
+
+</body>
+</html>
