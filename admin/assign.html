@@ -52,13 +52,13 @@ function logout(){
 }
 
 // Load dropdowns
-fetch('/api/get_employees')
+fetch('/api?action=get_employees')
 .then(r=>r.json())
 .then(d=>{
   employee.innerHTML = d.map(e=>`<option value="${e.employee_id}">${e.name}</option>`).join('');
 });
 
-fetch('/api/get_admin_topics')
+fetch('/api?action=get_admin_topics')
 .then(r=>r.json())
 .then(d=>{
   topic.innerHTML = d.map(t=>`<option value="${t.id}">${t.topic_name}</option>`).join('');
@@ -66,7 +66,7 @@ fetch('/api/get_admin_topics')
 
 // Assign
 function assign(){
-  fetch('/api/assign',{
+  fetch('/api?action=assign',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -85,7 +85,7 @@ function assign(){
 
 // Load table
 function load(){
-  fetch('/api/get_assignments')
+  fetch('/api?action=get_assignments')
   .then(r=>r.json())
   .then(d=>{
     list.innerHTML = d.map(a=>`
