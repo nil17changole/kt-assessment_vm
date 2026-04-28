@@ -168,7 +168,7 @@ button {
 let questions=[], index=0, answers={}, review={}, submitted=false, time=0;
 
 // ================= LOAD =================
-fetch('/api/get_assessment')
+fetch('/api?action=get_assessment')
 .then(r=>r.json())
 .then(d=>{
 document.getElementById("title").innerText="Assessment: "+d.topic;
@@ -280,7 +280,7 @@ if(submitted) return;
 submitted=true;
 save();
 
-fetch('/api/submit',{
+fetch('/api?action=submit',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body: JSON.stringify({
