@@ -1,33 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="../assets/style.css">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css">
 </head>
+
 <body>
 
-<div class="sidebar">
-<a href="dashboard.html">Dashboard</a>
-<a href="assign.html">Assign</a>
+<div class="container">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_questions.html">Questions</a>
+    <a href="assign.html">Assign</a>
+    <a href="results.html">Results</a>
+    <a href="../login.html">Logout</a>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <h1>Analytics Dashboard</h1>
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card">Topics <h2 id="topics">0</h2></div>
+      <div class="card">Avg Score <h2 id="avg">0%</h2></div>
+      <div class="card">Users <h2 id="users">0</h2></div>
+      <div class="card">Attempts <h2 id="attempts">0</h2></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="cards">
+      <div class="card">
+        <h3>Topic Performance</h3>
+        <canvas id="topicChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Score Trend</h3>
+        <canvas id="scoreChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
-<div class="main">
-<h1>Dashboard</h1>
-
-<div id="cards"></div>
-<canvas id="chart"></canvas>
-
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-fetch('/api/dashboard')
+fetch('/api/super_dashboard')
 .then(r=>r.json())
 .then(d=>{
-cards.innerHTML = `
-Users: ${d.users} <br>
-Attempts: ${d.attempts}
-`;
+  topics.innerText = d.topics;
+  users.innerText = d.users;
+  attempts.innerText = d.attempts;
+  avg.innerText = d.avg_score || '0%';
 
-console.log(d);
+  new Chart(topicChart, {
+    type:'bar',
+    data:{
+      labels:d.topic_labels || [],
+      datasets:[{data:d.topic_scores || []}]
+    }
+  });
+
+  new Chart(scoreChart, {
+    type:'line',
+    data:{
+      labels:d.trend_labels || [],
+      datasets:[{data:d.trend_scores || []}]
+    }
+  });
 });
 </script>
 
