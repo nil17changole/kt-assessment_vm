@@ -1,36 +1,85 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Manage Topics</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
 <body>
 
-<h2>Manage Topics</h2>
+<div class="container">
 
-<input id="topicName" placeholder="Topic Name">
-<button onclick="add()">Add</button>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
 
-<table id="table"></table>
+  <!-- Main -->
+  <div class="main">
+
+    <h1>Manage Topics</h1>
+
+    <!-- Add Topic -->
+    <div class="card">
+      <h3>Add Topic</h3>
+      <input id="topicName" placeholder="Topic Name">
+      <button onclick="addTopic()">Add</button>
+    </div>
+
+    <!-- Topics List -->
+    <div class="card">
+      <h3>All Topics</h3>
+      <table width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody id="topicTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
-
-function load(){
-fetch('/api/get_admin_topics')
-.then(r=>r.json())
-.then(d=>{
-table.innerHTML = d.map(x=>`
-<tr><td>${x.id}</td><td>${x.topic_name}</td></tr>
-`).join('');
-});
+function loadTopics() {
+  fetch('/api/topics', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ action: 'getTopics' })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    topicTable.innerHTML = '';
+    d.data.forEach(t=>{
+      topicTable.innerHTML += `<tr><td>${t.id}</td><td>${t.topic_name}</td></tr>`;
+    });
+  });
 }
 
-function add(){
-fetch('/api/add_topic',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({name:topicName.value})
-}).then(()=>load());
+function addTopic(){
+  const topic_name = document.getElementById('topicName').value;
+
+  fetch('/api/topics',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      action:'addTopic',
+      payload:{topic_name}
+    })
+  }).then(()=>loadTopics());
 }
 
-load();
-
+loadTopics();
 </script>
 
 </body>
