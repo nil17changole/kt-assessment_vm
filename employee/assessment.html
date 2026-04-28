@@ -167,7 +167,7 @@ button {
 
 let questions=[], index=0, answers={}, review={}, submitted=false, time=0;
 
-// LOAD
+// ================= LOAD =================
 fetch('/api/get_assessment')
 .then(r=>r.json())
 .then(d=>{
@@ -175,12 +175,30 @@ document.getElementById("title").innerText="Assessment: "+d.topic;
 questions = d.questions;
 time = d.duration * 60;
 
+enableFullScreen();
 startTimer();
 createGrid();
 loadQ();
 });
 
-// TIMER
+// ================= FULLSCREEN =================
+function enableFullScreen(){
+let elem = document.documentElement;
+
+if (elem.requestFullscreen) elem.requestFullscreen();
+else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+}
+
+// Detect exit fullscreen
+document.addEventListener("fullscreenchange", ()=>{
+if(!document.fullscreenElement && !submitted){
+alert("Exiting fullscreen is not allowed!");
+submitQuiz();
+}
+});
+
+// ================= TIMER =================
 function startTimer(){
 setInterval(()=>{
 if(submitted) return;
@@ -197,7 +215,7 @@ submitQuiz();
 },1000);
 }
 
-// LOAD QUESTION
+// ================= LOAD QUESTION =================
 function loadQ(){
 let q=questions[index];
 
@@ -214,32 +232,37 @@ ${q['option_'+o.toLowerCase()]}
 updateGrid();
 }
 
-// SAVE
+// ================= SAVE =================
 function save(){
 let sel=document.querySelector('input[name="ans"]:checked');
 if(sel) answers[index]=sel.value;
 }
 
-// NEXT
+// ================= NAV =================
 function next(){
 save();
 if(index<questions.length-1){ index++; loadQ(); }
 }
 
-// REVIEW
+function go(i){
+save();
+index=i;
+loadQ();
+}
+
+// ================= REVIEW =================
 function markReview(){
 review[index]=true;
 updateGrid();
 }
 
-// GRID
+// ================= GRID =================
 function createGrid(){
 grid.innerHTML = questions.map((_,i)=>
 `<div class="qbox" onclick="go(${i})" id="q${i}">${i+1}</div>`
 ).join('');
 }
 
-// UPDATE GRID
 function updateGrid(){
 questions.forEach((_,i)=>{
 let box=document.getElementById("q"+i);
@@ -251,10 +274,7 @@ if(review[i]) box.classList.add("review");
 });
 }
 
-// NAV
-function go(i){ save(); index=i; loadQ(); }
-
-// SUBMIT
+// ================= SUBMIT =================
 function submitQuiz(){
 if(submitted) return;
 submitted=true;
@@ -276,11 +296,45 @@ window.location='/login.html';
 });
 }
 
-// ANTI-CHEAT
+// ================= ANTI-CHEAT =================
+
+// TAB SWITCH / MINIMIZE
 document.addEventListener("visibilitychange", ()=>{
 if(document.hidden && !submitted){
-alert("Tab switch not allowed");
+alert("Tab switch detected!");
 submitQuiz();
+}
+});
+
+// WINDOW BLUR
+window.addEventListener("blur", ()=>{
+if(!submitted){
+alert("Window focus lost!");
+submitQuiz();
+}
+});
+
+// RIGHT CLICK DISABLE
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// COPY / PASTE DISABLE
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("paste", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+
+// TEXT SELECTION DISABLE
+document.addEventListener("selectstart", e => e.preventDefault());
+
+// BLOCK DEV TOOLS KEYS
+document.addEventListener("keydown", function(e){
+if(
+e.key === "F12" ||
+(e.ctrlKey && e.shiftKey && e.key === "I") ||
+(e.ctrlKey && e.key === "U") ||
+(e.ctrlKey && e.key === "C")
+){
+e.preventDefault();
+alert("Restricted action!");
 }
 });
 
