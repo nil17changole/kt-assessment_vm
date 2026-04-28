@@ -1,81 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Assign</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Assign Assessment</title>
+  <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
 
-<div class="container">
-
 <div class="sidebar">
   <h2>Admin</h2>
   <a href="dashboard.html">Dashboard</a>
-  <a href="manage_questions.html">Questions</a>
-  <a href="assign.html">Assign</a>
+  <a href="questions.html">Questions</a>
+  <a href="assign.html" class="active">Assign</a>
   <a href="results.html">Results</a>
+  <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
 
 <h1>Assign Assessment</h1>
 
-<div class="card">
-<select id="emp"></select>
-<select id="topic"></select>
-<input id="duration" placeholder="Duration">
-<select id="status">
-  <option>Open</option>
-  <option>Closed</option>
-</select>
-<button onclick="assign()">Assign</button>
+<div class="form-box">
+  <select id="employee"></select>
+  <select id="topic"></select>
+  <input type="number" id="duration" placeholder="Duration (minutes)">
+  <select id="status">
+    <option value="true">Open</option>
+    <option value="false">Closed</option>
+  </select>
+  <button onclick="assign()">Assign</button>
 </div>
 
 <table>
-<thead>
-<tr>
-<th>Employee</th>
-<th>Topic</th>
-<th>Duration</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody id="data"></tbody>
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th>Topic</th>
+      <th>Duration</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody id="list"></tbody>
 </table>
 
 </div>
-</div>
 
 <script>
-function assign(){
- fetch('/api/assign',{
-   method:'POST',
-   headers:{'Content-Type':'application/json'},
-   body: JSON.stringify({
-     employee_id: emp.value,
-     topic_id: topic.value,
-     duration: duration.value,
-     status: status.value
-   })
- }).then(()=>load());
+function logout(){
+  localStorage.clear();
+  window.location.href = "../login.html";
 }
 
+// Load dropdowns
+fetch('/api/get_employees')
+.then(r=>r.json())
+.then(d=>{
+  employee.innerHTML = d.map(e=>`<option value="${e.employee_id}">${e.name}</option>`).join('');
+});
+
+fetch('/api/get_admin_topics')
+.then(r=>r.json())
+.then(d=>{
+  topic.innerHTML = d.map(t=>`<option value="${t.id}">${t.topic_name}</option>`).join('');
+});
+
+// Assign
+function assign(){
+  fetch('/api/assign',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      employee_id: employee.value,
+      topic_id: topic.value,
+      duration: duration.value,
+      is_open: status.value === "true"
+    })
+  })
+  .then(r=>r.json())
+  .then(()=>{
+    alert("Assigned!");
+    load();
+  });
+}
+
+// Load table
 function load(){
- fetch('/api/assignments')
- .then(r=>r.json())
- .then(d=>{
-   data.innerHTML='';
-   d.data.forEach(a=>{
-     data.innerHTML+=`
-     <tr>
-       <td>${a.employee}</td>
-       <td>${a.topic}</td>
-       <td>${a.duration}</td>
-       <td>${a.is_open?'OPEN':'CLOSED'}</td>
-     </tr>`;
-   });
- });
+  fetch('/api/get_assignments')
+  .then(r=>r.json())
+  .then(d=>{
+    list.innerHTML = d.map(a=>`
+      <tr>
+        <td>${a.employee}</td>
+        <td>${a.topic}</td>
+        <td>${a.duration}</td>
+        <td>${a.is_open ? 'OPEN' : 'CLOSED'}</td>
+      </tr>
+    `).join('');
+  });
 }
 
 load();
