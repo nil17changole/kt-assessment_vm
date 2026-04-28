@@ -21,7 +21,7 @@
 
 const id = new URLSearchParams(location.search).get('id');
 
-fetch('/api/get_question?id='+id)
+fetch('/api?action=get_question?id='+id)
 .then(r=>r.json())
 .then(d=>{
 q.value=d.question;
@@ -32,7 +32,7 @@ d.value=d.option_d;
 });
 
 function save(){
-fetch('/api/update_question',{
+fetch('/api?action=update_question',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body: JSON.stringify({
