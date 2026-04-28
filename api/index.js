@@ -24,32 +24,33 @@ export default async function handler(req, res) {
     }
 
     // ================= TOPICS =================
-    if (action === "topics") {
-      const { data, error } = await supabase
-        .from("topics")
-        .select("*")
-        .order("id", { ascending: true });
+    // ================= TOPICS =================
+if (action === "topics") {
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*")
+    .order("id", { ascending: true });
 
-      if (error) throw error;
+  if (error) throw error;
 
-      return res.status(200).json(data);
-    }
+  return res.status(200).json(data);
+}
 
-    if (action === "add_topic") {
-      const { topic } = req.body;
+if (action === "add_topic") {
+  const { topic } = req.body;
 
-      if (!topic) {
-        return res.status(400).json({ error: "Topic is required" });
-      }
+  if (!topic) {
+    return res.status(400).json({ error: "Topic is required" });
+  }
 
-      const { error } = await supabase
-        .from("topics")
-        .insert([{ topic }]); // ✅ matches your DB
+  const { error } = await supabase
+    .from("topics")
+    .insert([{ name: topic }]);  // ✅ FIXED
 
-      if (error) throw error;
+  if (error) throw error;
 
-      return res.status(200).json({ message: "Topic added" });
-    }
+  return res.status(200).json({ message: "Topic added" });
+}
 
     // ================= QUESTIONS UPLOAD =================
     if (action === "upload_questions") {
