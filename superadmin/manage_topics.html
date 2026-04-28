@@ -1,86 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Manage Topics</title>
-  <link rel="stylesheet" href="../assets/style.css">
-</head>
-
-<body>
-
-<div class="container">
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>Super Admin</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="manage_users.html">Users</a>
-    <a href="manage_topics.html">Topics</a>
-    <a href="upload_questions.html">Upload Questions</a>
-    <a href="manage_permissions.html">Permissions</a>
-    <a href="../login.html">Logout</a>
-  </div>
-
-  <!-- Main -->
-  <div class="main">
-
-    <h1>Manage Topics</h1>
-
-    <!-- Add Topic -->
-    <div class="card">
-      <h3>Add Topic</h3>
-      <input id="topicName" placeholder="Topic Name">
-      <button onclick="addTopic()">Add</button>
-    </div>
-
-    <!-- Topics List -->
-    <div class="card">
-      <h3>All Topics</h3>
-      <table width="100%">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody id="topicTable"></tbody>
-      </table>
-    </div>
-
-  </div>
-
-</div>
-
 <script>
 function loadTopics() {
-  fetch('/api?action=topics', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ action: 'getTopics' })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    topicTable.innerHTML = '';
-    d.data.forEach(t=>{
-      topicTable.innerHTML += `<tr><td>${t.id}</td><td>${t.topic_name}</td></tr>`;
-    });
-  });
+  fetch('/api?action=topics')   // ✅ GET request
+    .then(r => r.json())
+    .then(data => {
+      topicTable.innerHTML = '';
+
+      if (!Array.isArray(data)) {
+        console.error("Invalid response:", data);
+        return;
+      }
+
+      data.forEach(t => {
+        topicTable.innerHTML += `
+          <tr>
+            <td>${t.id}</td>
+            <td>${t.topic || t.name || '-'}</td>
+          </tr>
+        `;
+      });
+    })
+    .catch(err => console.error(err));
 }
 
 function addTopic(){
-  const topic_name = document.getElementById('topicName').value;
+  const topic = document.getElementById('topicName').value;
 
-  fetch('/api?action=topics',{
+  fetch('/api?action=add_topic', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      action:'addTopic',
-      payload:{topic_name}
-    })
-  }).then(()=>loadTopics());
+    body: JSON.stringify({ topic })
+  })
+  .then(r => r.json())
+  .then(() => {
+    document.getElementById('topicName').value = '';
+    loadTopics();
+  })
+  .catch(err => console.error(err));
 }
 
 loadTopics();
 </script>
-
-</body>
-</html>
