@@ -4,47 +4,162 @@
 <title>Assessment</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;}
-.header{display:flex;justify-content:space-between;padding:15px;background:#1e293b;}
-.timer{font-size:20px;color:#22c55e;}
-.container{display:flex;}
-.main{flex:3;padding:30px;}
-.sidebar{flex:1;background:#1e293b;padding:20px;}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
-.qbox{padding:10px;background:#334155;text-align:center;cursor:pointer;}
-.qbox.active{background:#6366f1;}
-.qbox.answered{background:#22c55e;}
-.qbox.review{background:#f59e0b;}
-label{display:block;margin:10px 0;padding:10px;background:#1e293b;}
-button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer;}
-.next{background:#6366f1;color:white;}
-.reviewBtn{background:#f59e0b;color:white;}
-.submit{background:#22c55e;color:white;width:100%;}
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+/* HEADER */
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 25px;
+  background:#1e293b;
+}
+
+.timer {
+  font-size:18px;
+  color:#22c55e;
+  font-weight:bold;
+}
+
+/* LAYOUT */
+.container {
+  display:flex;
+  height:calc(100vh - 60px);
+}
+
+/* LEFT PANEL */
+.main {
+  flex:3;
+  padding:25px;
+}
+
+.question-box {
+  background:#1e293b;
+  padding:20px;
+  border-radius:10px;
+}
+
+.question-box h3 {
+  margin-bottom:20px;
+}
+
+/* OPTIONS */
+.option {
+  display:block;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:6px;
+  background:#334155;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.option:hover {
+  background:#475569;
+}
+
+.option input {
+  margin-right:10px;
+}
+
+/* BUTTONS */
+.actions {
+  margin-top:20px;
+}
+
+button {
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.next { background:#6366f1; color:white; }
+.reviewBtn { background:#f59e0b; color:white; }
+.submit { background:#22c55e; color:white; width:100%; margin-top:20px; }
+
+/* RIGHT PANEL */
+.sidebar {
+  flex:1;
+  background:#1e293b;
+  padding:20px;
+  border-left:1px solid #334155;
+}
+
+/* GRID */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.qbox {
+  padding:10px;
+  background:#334155;
+  text-align:center;
+  cursor:pointer;
+  border-radius:6px;
+  font-size:13px;
+}
+
+.qbox.active { background:#6366f1; }
+.qbox.answered { background:#22c55e; }
+.qbox.review { background:#f59e0b; }
+
+/* LEGEND */
+.legend {
+  margin-top:20px;
+  font-size:12px;
+}
+
+.legend div {
+  margin:5px 0;
+}
 </style>
+
 </head>
 
 <body>
 
 <div class="header">
-<h2 id="title"></h2>
-<div class="timer" id="timer"></div>
+  <h3 id="title"></h3>
+  <div class="timer" id="timer"></div>
 </div>
 
 <div class="container">
 
-<div class="main">
-<div id="quiz"></div>
+  <!-- LEFT -->
+  <div class="main">
+    <div class="question-box">
+      <div id="quiz"></div>
 
-<button class="next" onclick="next()">Next</button>
-<button class="reviewBtn" onclick="markReview()">Mark Review</button>
-</div>
+      <div class="actions">
+        <button class="next" onclick="next()">Next</button>
+        <button class="reviewBtn" onclick="markReview()">Mark Review</button>
+      </div>
+    </div>
+  </div>
 
-<div class="sidebar">
-<h3>Questions</h3>
-<div class="grid" id="grid"></div>
+  <!-- RIGHT -->
+  <div class="sidebar">
+    <h3>Questions</h3>
+    <div class="grid" id="grid"></div>
 
-<button class="submit" onclick="submitQuiz()">Submit</button>
-</div>
+    <div class="legend">
+      <div>🟦 Current</div>
+      <div>🟩 Answered</div>
+      <div>🟧 Review</div>
+    </div>
+
+    <button class="submit" onclick="submitQuiz()">Final Submit</button>
+  </div>
 
 </div>
 
@@ -52,7 +167,7 @@ button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer;}
 
 let questions=[], index=0, answers={}, review={}, submitted=false, time=0;
 
-// LOAD FROM API
+// LOAD
 fetch('/api/get_assessment')
 .then(r=>r.json())
 .then(d=>{
@@ -89,7 +204,7 @@ let q=questions[index];
 quiz.innerHTML=`
 <h3>${index+1}. ${q.question}</h3>
 ${['A','B','C','D'].map(o=>`
-<label>
+<label class="option">
 <input type="radio" name="ans" value="${o}"
 ${answers[index]==o?'checked':''}>
 ${q['option_'+o.toLowerCase()]}
@@ -124,10 +239,12 @@ grid.innerHTML = questions.map((_,i)=>
 ).join('');
 }
 
+// UPDATE GRID
 function updateGrid(){
 questions.forEach((_,i)=>{
 let box=document.getElementById("q"+i);
 box.className="qbox";
+
 if(i==index) box.classList.add("active");
 if(answers[i]) box.classList.add("answered");
 if(review[i]) box.classList.add("review");
@@ -149,7 +266,7 @@ headers:{'Content-Type':'application/json'},
 body: JSON.stringify({
 answers,
 questions,
-time_taken: (time)
+time_taken: time
 })
 })
 .then(r=>r.json())
@@ -168,5 +285,6 @@ submitQuiz();
 });
 
 </script>
+
 </body>
 </html>
