@@ -52,7 +52,7 @@
 
 <script>
 function loadTopics() {
-  fetch('/api/topics', {
+  fetch('/api?action=topics', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ action: 'getTopics' })
@@ -69,7 +69,7 @@ function loadTopics() {
 function addTopic(){
   const topic_name = document.getElementById('topicName').value;
 
-  fetch('/api/topics',{
+  fetch('/api?action=topics',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
