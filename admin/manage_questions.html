@@ -39,7 +39,7 @@
 
 <script>
 function load(){
-  fetch('/api/questions',{
+  fetch('/api?action=questions',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({topic_id:topic.value})
@@ -61,7 +61,7 @@ function load(){
 }
 
 function del(id){
-  fetch('/api/questions',{
+  fetch('/api?action=questions',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({action:'delete', id})
