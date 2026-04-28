@@ -1,23 +1,70 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Results</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
 <body>
 
-<table id="res"></table>
+<div class="container">
+
+<div class="sidebar">
+  <h2>Admin</h2>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="manage_questions.html">Questions</a>
+  <a href="assign.html">Assign</a>
+  <a href="results.html">Results</a>
+</div>
+
+<div class="main">
+
+<h1>Results</h1>
+
+<!-- Filters -->
+<input id="name" placeholder="Search Name">
+<input id="topic" placeholder="Search Topic">
+<button onclick="load()">Filter</button>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Topic</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+</div>
+</div>
 
 <script>
+function load(){
+ fetch('/api/results',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body: JSON.stringify({
+     name: name.value,
+     topic: topic.value
+   })
+ })
+ .then(r=>r.json())
+ .then(d=>{
+   table.innerHTML='';
+   d.data.forEach(r=>{
+     table.innerHTML+=`
+     <tr>
+       <td>${r.name}</td>
+       <td>${r.topic}</td>
+       <td>${r.score}%</td>
+     </tr>`;
+   });
+ });
+}
 
-fetch('/api/results')
-.then(r=>r.json())
-.then(d=>{
-res.innerHTML = d.map(x=>`
-<tr>
-<td>${x.name}</td>
-<td>${x.topic}</td>
-<td>${x.score}%</td>
-</tr>
-`).join('');
-});
-
+load();
 </script>
 
 </body>
