@@ -1,58 +1,146 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
 <body>
 
-<h2>Manage Users</h2>
+<div class="container">
 
-<input id="emp_id" placeholder="Employee ID">
-<input id="name" placeholder="Name">
-<input id="pass" placeholder="Password">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
 
-<select id="role">
-<option>EMPLOYEE</option>
-<option>ADMIN</option>
-</select>
+  <!-- Main Content -->
+  <div class="main">
 
-<button onclick="addUser()">Add</button>
+    <h1>Manage Users</h1>
 
-<table id="table"></table>
+    <!-- Add User -->
+    <div class="card" style="margin-bottom:20px;">
+      <h3>Add User</h3>
+
+      <input id="empId" placeholder="Employee ID"><br><br>
+      <input id="name" placeholder="Name"><br><br>
+      <input id="password" placeholder="Password"><br><br>
+
+      <select id="role">
+        <option value="EMPLOYEE">EMPLOYEE</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="SUPERADMIN">SUPERADMIN</option>
+      </select><br><br>
+
+      <button onclick="addUser()">Add User</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+      <h3>All Users</h3>
+
+      <table border="1" width="100%" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th>Emp ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
 
 <script>
 
-function load(){
-fetch('/api/get_users')
-.then(r=>r.json())
-.then(d=>{
-table.innerHTML = d.map(x=>`
-<tr>
-<td>${x.employee_id}</td>
-<td>${x.name}</td>
-<td>${x.role}</td>
-<td><button onclick="del('${x.employee_id}')">Delete</button></td>
-</tr>
-`).join('');
-});
+// Load users
+function loadUsers() {
+  fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getUsers' })
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    const table = document.getElementById('userTable');
+    table.innerHTML = '';
+
+    if (!data.data) return;
+
+    data.data.forEach(user => {
+      table.innerHTML += `
+        <tr>
+          <td>${user.employee_id}</td>
+          <td>${user.name}</td>
+          <td>${user.role}</td>
+          <td>
+            <button onclick="deleteUser('${user.employee_id}')">Delete</button>
+          </td>
+        </tr>
+      `;
+    });
+
+  });
 }
 
-function addUser(){
-fetch('/api/add_user',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({
-emp_id:emp_id.value,
-name:name.value,
-password:pass.value,
-role:role.value
-})
-}).then(()=>load());
+
+// Add user
+function addUser() {
+  const employee_id = document.getElementById('empId').value;
+  const name = document.getElementById('name').value;
+  const password = document.getElementById('password').value;
+  const role = document.getElementById('role').value;
+
+  fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'addUser',
+      payload: { employee_id, name, password, role }
+    })
+  })
+  .then(res => res.json())
+  .then(() => {
+    alert('User Added');
+    loadUsers();
+  });
 }
 
-function del(id){
-fetch('/api/delete_user?id='+id)
-.then(()=>load());
+
+// Delete user
+function deleteUser(employee_id) {
+  if (!confirm('Delete this user?')) return;
+
+  fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'deleteUser',
+      payload: { employee_id }
+    })
+  })
+  .then(res => res.json())
+  .then(() => {
+    alert('User Deleted');
+    loadUsers();
+  });
 }
 
-load();
+
+// Initial load
+loadUsers();
 
 </script>
 
