@@ -58,7 +58,7 @@ export default async function handler(req, res) {
       option_b: q.option_b,
       option_c: q.option_c,
       option_d: q.option_d,
-      correct_answer: q.correct_answer
+      correct_option: q.correct_option
     }));
 
     const { error } = await supabase.from("questions").insert(payload);
@@ -113,7 +113,7 @@ export default async function handler(req, res) {
       let score = 0;
 
       questions.forEach((q, i) => {
-        if (answers[i] === q.correct_answer) score++;
+        if (answers[i] === q.correct_option) score++;
       });
 
       score = (score / questions.length) * 100;
