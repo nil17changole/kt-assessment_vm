@@ -1,6 +1,6 @@
 function login(){
 
-fetch('/api/login',{
+fetch('/api?action=login',{
  method:'POST',
  headers:{'Content-Type':'application/json'},
  body: JSON.stringify({
