@@ -46,7 +46,7 @@ function logout(){
 }
 
 function load(){
-  fetch('/api/get_assignments')
+  fetch('/api?action=get_assignments')
   .then(r=>r.json())
   .then(d=>{
     let filtered = d.filter(x =>
