@@ -1,154 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Superadmin Dashboard</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-}
-
-/* SIDEBAR */
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    position: fixed;
-    background: #020617;
-    padding: 20px;
-}
-
-.sidebar h2 {
-    margin-bottom: 20px;
-}
-
-.sidebar a {
-    display: block;
-    color: #cbd5f5;
-    text-decoration: none;
-    margin: 12px 0;
-}
-
-.sidebar a:hover {
-    color: white;
-}
-
-/* MAIN */
-.main {
-    margin-left: 240px;
-    padding: 30px;
-}
-
-/* CARDS */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-.card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    border-left: 5px solid #7c3aed;
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: scale(1.03);
-}
-
-.card h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #94a3b8;
-}
-
-.card p {
-    font-size: 28px;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .cards {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
+  <title>Superadmin Dashboard</title>
+  <link rel="stylesheet" href="../assets/style.css">
 </head>
 
 <body>
 
-<div class="sidebar">
-<h2>Super Admin</h2>
+<div class="container">
 
-<a href="dashboard.html">Dashboard</a>
-<a href="manage_users.html">Users</a>
-<a href="manage_topics.html">Topics</a>
-<a href="upload_questions.html">Upload Questions</a>
-<a href="permissions.html">Permissions</a>
-<a href="../login.html">Logout</a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../logout.html">Logout</a>
+  </div>
 
-</div>
+  <!-- Main -->
+  <div class="main">
 
-<div class="main">
+    <h1>Dashboard</h1>
 
-<h1>Superadmin Dashboard</h1>
-
-<div class="cards">
-    <div class="card">
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card">
         <h3>Users</h3>
         <p id="users">0</p>
-    </div>
+      </div>
 
-    <div class="card">
+      <div class="card">
         <h3>Topics</h3>
         <p id="topics">0</p>
-    </div>
+      </div>
 
-    <div class="card">
+      <div class="card">
         <h3>Questions</h3>
         <p id="questions">0</p>
-    </div>
+      </div>
 
-    <div class="card">
+      <div class="card">
         <h3>Attempts</h3>
         <p id="attempts">0</p>
+      </div>
     </div>
-</div>
 
+  </div>
 </div>
 
 <script>
-
-async function loadDashboard() {
-  try {
-    const res = await fetch('/api/super_dashboard');
-    const data = await res.json();
-
-    document.getElementById("users").innerText = data.users;
-    document.getElementById("topics").innerText = data.topics;
-    document.getElementById("questions").innerText = data.questions;
-    document.getElementById("attempts").innerText = data.attempts;
-
-  } catch (err) {
-    console.error("Dashboard error:", err);
-  }
-}
-
-loadDashboard();
-
+fetch('/api/dashboard')
+.then(res => res.json())
+.then(data => {
+  document.getElementById('users').innerText = data.users || 0;
+  document.getElementById('topics').innerText = data.topics || 0;
+  document.getElementById('questions').innerText = data.questions || 0;
+  document.getElementById('attempts').innerText = data.attempts || 0;
+});
 </script>
 
 </body>
