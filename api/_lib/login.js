@@ -1,5 +1,6 @@
 import { supabase } from './_lib/supabase';
-
+import bcrypt from 'bcryptjs';
+const match = await bcrypt.compare(password, data.password);
 export default async function handler(req, res) {
   const { employee_id, password } = req.body;
 
