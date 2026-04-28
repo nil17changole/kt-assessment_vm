@@ -42,7 +42,7 @@ function upload(){
   formData.append('topic', topic);
   formData.append('file', file);
 
-  fetch('/api/questions', {
+  fetch('/api?action=upload_questions', {
     method: 'POST',
     body: formData
   }).then(()=>alert('Uploaded'));
