@@ -52,7 +52,7 @@
 </div>
 
 <script>
-fetch('/api/dashboard')
+fetch('/api?action=dashboard')
 .then(res => res.json())
 .then(data => {
   document.getElementById('users').innerText = data.users || 0;
