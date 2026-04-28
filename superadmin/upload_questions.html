@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Upload Questions</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
 <body>
 
-<h2>Upload Questions</h2>
+<div class="container">
 
-<input id="topic" placeholder="Topic Name">
-<input type="file" id="file">
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
 
-<button onclick="upload()">Upload</button>
+  <div class="main">
+
+    <h1>Upload Questions (CSV)</h1>
+
+    <div class="card">
+      <input id="topic" placeholder="Topic Name"><br><br>
+      <input type="file" id="file"><br><br>
+      <button onclick="upload()">Upload</button>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
-
 function upload(){
+  const topic = document.getElementById('topic').value;
+  const file = document.getElementById('file').files[0];
 
-let formData = new FormData();
-formData.append("topic", topic.value);
-formData.append("file", file.files[0]);
+  const formData = new FormData();
+  formData.append('topic', topic);
+  formData.append('file', file);
 
-fetch('/api/upload_questions',{
-method:'POST',
-body: formData
-})
-.then(()=>alert("Uploaded"));
+  fetch('/api/questions', {
+    method: 'POST',
+    body: formData
+  }).then(()=>alert('Uploaded'));
 }
-
 </script>
 
 </body>
