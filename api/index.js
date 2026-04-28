@@ -42,23 +42,36 @@ export default async function handler(req, res) {
 
     // ================= QUESTIONS UPLOAD =================
     if (action === "upload_questions") {
-      const { topic, questions } = req.body;
+  try {
+    console.log("BODY:", req.body);
 
-      const payload = questions.map(q => ({
-        topic,
-        question: q.question,
-        option_a: q.option_a,
-        option_b: q.option_b,
-        option_c: q.option_c,
-        option_d: q.option_d,
-        correct_answer: q.correct_answer
-      }));
+    const { topic, questions } = req.body;
 
-      const { error } = await supabase.from("questions").insert(payload);
-      if (error) throw error;
-
-      return res.json({ message: "Uploaded successfully" });
+    if (!topic || !questions || !questions.length) {
+      return res.status(400).json({ error: "Invalid data format" });
     }
+
+    const payload = questions.map(q => ({
+      topic,
+      question: q.question,
+      option_a: q.option_a,
+      option_b: q.option_b,
+      option_c: q.option_c,
+      option_d: q.option_d,
+      correct_answer: q.correct_answer
+    }));
+
+    const { error } = await supabase.from("questions").insert(payload);
+
+    if (error) throw error;
+
+    return res.json({ message: "Uploaded successfully" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
+}
 
     // ================= DASHBOARD =================
     if (action === "dashboard") {
