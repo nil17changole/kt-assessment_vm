@@ -41,7 +41,7 @@
 
 <script>
 function loadData(){
-  fetch('/api/users',{
+  fetch('/api?action=users',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({action:'getAdmins'})
@@ -53,7 +53,7 @@ function loadData(){
     });
   });
 
-  fetch('/api/topics',{
+  fetch('/api?action=topics',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({action:'getTopics'})
@@ -67,7 +67,7 @@ function loadData(){
 }
 
 function assign(){
-  fetch('/api/assign',{
+  fetch('/api?action=assign',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
