@@ -39,7 +39,7 @@ function logout(){
   window.location.href = "../login.html";
 }
 
-fetch('/api/get_assignments')
+fetch('/api?action=get_assignments')
 .then(r=>r.json())
 .then(d=>{
   document.getElementById('topics').innerText = d.topics || 0;
