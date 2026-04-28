@@ -56,10 +56,9 @@
 
 <script>
 
-// ✅ FIX: define element
 const topicTable = document.getElementById("topicTable");
 
-// ================= LOAD TOPICS =================
+// ================= LOAD =================
 function loadTopics() {
   fetch('/api?action=topics')
     .then(r => r.json())
@@ -67,30 +66,25 @@ function loadTopics() {
 
       topicTable.innerHTML = '';
 
-      if (!Array.isArray(data)) {
-        console.error("Invalid response:", data);
-        return;
-      }
-
       data.forEach(t => {
         topicTable.innerHTML += `
           <tr>
             <td>${t.id}</td>
-            <td>${t.topic}</td>
+            <td>${t.name}</td>   <!-- ✅ FIXED -->
           </tr>
         `;
       });
 
     })
-    .catch(err => console.error("Load error:", err));
+    .catch(err => console.error(err));
 }
 
-// ================= ADD TOPIC =================
+// ================= ADD =================
 function addTopic(){
   const topic = document.getElementById('topicName').value.trim();
 
   if (!topic) {
-    alert("Please enter topic name");
+    alert("Enter topic name");
     return;
   }
 
@@ -100,17 +94,19 @@ function addTopic(){
     body: JSON.stringify({ topic })
   })
   .then(r => r.json())
-  .then(() => {
-    document.getElementById('topicName').value = '';
-    loadTopics();
+  .then(d => {
+      if (d.error) throw new Error(d.error);
+
+      document.getElementById('topicName').value = '';
+      loadTopics();
   })
   .catch(err => {
-    console.error("Add error:", err);
-    alert("Failed to add topic");
+      console.error(err);
+      alert("Error: " + err.message);
   });
 }
 
-// ================= INIT =================
+// INIT
 loadTopics();
 
 </script>
