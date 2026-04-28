@@ -1,8 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Topics</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html" class="active">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <h1>Manage Topics</h1>
+
+    <!-- Add Topic -->
+    <div class="card">
+      <h3>Add Topic</h3>
+
+      <div style="display:flex; gap:10px;">
+        <input id="topicName" placeholder="Enter Topic Name" style="flex:1;">
+        <button onclick="addTopic()">Add</button>
+      </div>
+    </div>
+
+    <!-- Topics List -->
+    <div class="card">
+      <h3>All Topics</h3>
+
+      <table width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Topic Name</th>
+          </tr>
+        </thead>
+        <tbody id="topicTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
 <script>
+
+// ✅ FIX: define element
+const topicTable = document.getElementById("topicTable");
+
+// ================= LOAD TOPICS =================
 function loadTopics() {
-  fetch('/api?action=topics')   // ✅ GET request
+  fetch('/api?action=topics')
     .then(r => r.json())
     .then(data => {
+
       topicTable.innerHTML = '';
 
       if (!Array.isArray(data)) {
@@ -14,18 +76,25 @@ function loadTopics() {
         topicTable.innerHTML += `
           <tr>
             <td>${t.id}</td>
-            <td>${t.topic || t.name || '-'}</td>
+            <td>${t.topic}</td>
           </tr>
         `;
       });
+
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error("Load error:", err));
 }
 
+// ================= ADD TOPIC =================
 function addTopic(){
-  const topic = document.getElementById('topicName').value;
+  const topic = document.getElementById('topicName').value.trim();
 
-  fetch('/api?action=add_topic', {
+  if (!topic) {
+    alert("Please enter topic name");
+    return;
+  }
+
+  fetch('/api?action=add_topic',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ topic })
@@ -35,8 +104,16 @@ function addTopic(){
     document.getElementById('topicName').value = '';
     loadTopics();
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error("Add error:", err);
+    alert("Failed to add topic");
+  });
 }
 
+// ================= INIT =================
 loadTopics();
+
 </script>
+
+</body>
+</html>
