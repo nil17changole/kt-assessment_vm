@@ -34,18 +34,48 @@
 </div>
 
 <script>
-function upload(){
-  const topic = document.getElementById('topic').value;
-  const file = document.getElementById('file').files[0];
+async function uploadCSV() {
+  const file = document.querySelector("input[type=file]").files[0];
+  const topic = document.querySelector("input").value;
 
-  const formData = new FormData();
-  formData.append('topic', topic);
-  formData.append('file', file);
+  if (!file) return alert("Select file");
+
+  const text = await file.text();
+  const rows = text.split("\n").slice(1); // skip header
+
+  const questions = rows
+    .filter(r => r.trim() !== "")
+    .map(r => {
+      const cols = r.split(",");
+
+      return {
+        question: cols[0],
+        option_a: cols[1],
+        option_b: cols[2],
+        option_c: cols[3],
+        option_d: cols[4],
+        correct_answer: cols[5]
+      };
+    });
+
+  console.log("Parsed Questions:", questions);
 
   fetch('/api?action=upload_questions', {
     method: 'POST',
-    body: formData
-  }).then(()=>alert('Uploaded'));
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ topic, questions })
+  })
+  .then(async r => {
+    const data = await r.json();
+
+    if (!r.ok) throw new Error(data.error);
+
+    alert("Uploaded successfully");
+  })
+  .catch(err => {
+    alert("Error: " + err.message);
+    console.error(err);
+  });
 }
 </script>
 
