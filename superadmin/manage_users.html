@@ -66,7 +66,7 @@
 
 // Load users
 function loadUsers() {
-  fetch('/api/users', {
+  fetch('/api?action=users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'getUsers' })
@@ -103,7 +103,7 @@ function addUser() {
   const password = document.getElementById('password').value;
   const role = document.getElementById('role').value;
 
-  fetch('/api/users', {
+  fetch('/api?action=users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -123,7 +123,7 @@ function addUser() {
 function deleteUser(employee_id) {
   if (!confirm('Delete this user?')) return;
 
-  fetch('/api/users', {
+  fetch('/api?action=users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
