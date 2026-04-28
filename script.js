@@ -1,5 +1,6 @@
 function login(){
-fetch('/enterprise_kta/api/login.php',{
+
+fetch('/api/login',{
  method:'POST',
  headers:{'Content-Type':'application/json'},
  body: JSON.stringify({
@@ -13,37 +14,23 @@ fetch('/enterprise_kta/api/login.php',{
  console.log("LOGIN RESPONSE:", data);
 
  if(!data.success){
-  alert(data.message || "Invalid login");
+  alert("Invalid login");
   return;
  }
 
- // ✅ FIXED ABSOLUTE PATHS
+ // ✅ NEW PATHS (HTML, NOT PHP)
  if(data.role === "ADMIN"){
-  window.location.href = "/enterprise_kta/admin/dashboard.php";
+  window.location.href = "/admin/dashboard.html";
   return;
  }
 
  if(data.role === "SUPERADMIN"){
-  window.location.href = "/enterprise_kta/superadmin/dashboard.php";
+  window.location.href = "/superadmin/dashboard.html";
   return;
  }
 
- // EMPLOYEE FLOW
- fetch('/enterprise_kta/api/check.php?id='+data.id)
- .then(res=>res.json())
- .then(a=>{
-
-   if(!a || !a.id){
-     alert("Assessment not open for you");
-     return;
-   }
-
-   localStorage.setItem("topic", a.topic_id);
-   localStorage.setItem("duration", a.duration_minutes);
-
-   window.location.href = "/enterprise_kta/employee/assessment.php";
-
- });
+ // EMPLOYEE
+ window.location.href = "/employee/assessment.html";
 
 })
 .catch(err=>{
