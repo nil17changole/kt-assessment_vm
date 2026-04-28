@@ -1,46 +1,81 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Assign Topic</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
 <body>
 
-<h2>Assign Topic to Admin</h2>
+<div class="container">
 
-<select id="admin"></select>
-<select id="topic"></select>
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
 
-<button onclick="assign()">Assign</button>
+  <div class="main">
+
+    <h1>Assign Topic to Admin</h1>
+
+    <div class="card">
+
+      <label>Admin</label><br>
+      <select id="admin"></select><br><br>
+
+      <label>Topic</label><br>
+      <select id="topic"></select><br><br>
+
+      <button onclick="assign()">Assign</button>
+
+    </div>
+
+  </div>
+
+</div>
 
 <script>
+function loadData(){
+  fetch('/api/users',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'getAdmins'})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    d.data.forEach(u=>{
+      admin.innerHTML += `<option value="${u.employee_id}">${u.name}</option>`;
+    });
+  });
 
-// load admins
-fetch('/api/get_admins')
-.then(r=>r.json())
-.then(d=>{
-admin.innerHTML = d.map(x=>`
-<option value="${x.id}">${x.name}</option>
-`).join('');
-});
-
-// load topics
-fetch('/api/get_admin_topics')
-.then(r=>r.json())
-.then(d=>{
-topic.innerHTML = d.map(x=>`
-<option value="${x.id}">${x.topic_name}</option>
-`).join('');
-});
-
-function assign(){
-fetch('/api/assign_topic_admin',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({
-admin:admin.value,
-topic:topic.value
-})
-}).then(()=>alert("Assigned"));
+  fetch('/api/topics',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'getTopics'})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    d.data.forEach(t=>{
+      topic.innerHTML += `<option value="${t.id}">${t.topic_name}</option>`;
+    });
+  });
 }
 
-</script>
+function assign(){
+  fetch('/api/assign',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      admin_id: admin.value,
+      topic_id: topic.value
+    })
+  }).then(()=>alert('Assigned'));
+}
 
-</body>
-</html>
+loadData();
+</script
