@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
     // ================= TOPICS =================
     // ================= TOPICS =================
+// ================= TOPICS =================
 if (action === "topics") {
   const { data, error } = await supabase
     .from("topics")
