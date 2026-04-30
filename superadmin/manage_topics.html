@@ -58,28 +58,23 @@
 
 const topicTable = document.getElementById("topicTable");
 
-// ================= LOAD =================
 function loadTopics() {
   fetch('/api?action=topics')
     .then(r => r.json())
     .then(data => {
-
       topicTable.innerHTML = '';
 
       data.forEach(t => {
         topicTable.innerHTML += `
           <tr>
             <td>${t.id}</td>
-            <td>${t.topic_name}</td>   <!-- ✅ FIXED -->
+            <td>${t.topic_name}</td>
           </tr>
         `;
       });
-
-    })
-    .catch(err => console.error(err));
+    });
 }
 
-// ================= ADD =================
 function addTopic(){
   const topic = document.getElementById('topicName').value.trim();
 
@@ -94,19 +89,12 @@ function addTopic(){
     body: JSON.stringify({ topic })
   })
   .then(r => r.json())
-  .then(d => {
-      if (d.error) throw new Error(d.error);
-
-      document.getElementById('topicName').value = '';
-      loadTopics();
-  })
-  .catch(err => {
-      console.error(err);
-      alert("Error: " + err.message);
+  .then(() => {
+    document.getElementById('topicName').value = '';
+    loadTopics();
   });
 }
 
-// INIT
 loadTopics();
 
 </script>
