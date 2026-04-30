@@ -22,10 +22,8 @@ export default async function handler(req, res) {
       if (error) throw error;
       return res.status(200).json({ message: "User added" });
     }
-
+    
     // ================= TOPICS =================
-    // ================= TOPICS =================
-// ================= TOPICS =================
 if (action === "topics") {
   const { data, error } = await supabase
     .from("topics")
@@ -46,7 +44,7 @@ if (action === "add_topic") {
 
   const { error } = await supabase
     .from("topics")
-    .insert([{ name: topic }]);  // ✅ FIXED
+    .insert([{ topic_name: topic }]);  // ✅ FIXED FINAL
 
   if (error) throw error;
 
