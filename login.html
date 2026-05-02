@@ -158,7 +158,7 @@ button:hover {
   <h2>Login</h2>
 
   <div class="input-group">
-    <input type="text" id="emp_id" placeholder="Employee ID">
+    <input type="text" id="employee_id" placeholder="Employee ID">
   </div>
 
   <div class="input-group">
@@ -177,22 +177,22 @@ button:hover {
 
 <script>
 async function login() {
-  const emp_id = document.getElementById("emp_id").value;
-  const password = document.getElementById("password").value;
+  const employee_id = document.getElementById("emp_id").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   const res = await fetch('/api?action=login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ emp_id, password })
+    body: JSON.stringify({ employee_id, password }) // ✅ FIX HERE
   });
 
   const data = await res.json();
 
-  if (data.success) {
+  if (res.ok && data.success) {
     localStorage.setItem("user", JSON.stringify(data.user));
     window.location.href = "dashboard.html";
   } else {
-    alert("Invalid login");
+    alert(data.error || "Invalid login");
   }
 }
 </script>
