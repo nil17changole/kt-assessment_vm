@@ -1,3 +1,4 @@
+/* ===== GLOBAL ===== */
 body {
   margin:0;
   font-family: Arial;
@@ -5,6 +6,7 @@ body {
   color:white;
 }
 
+/* ===== SIDEBAR ===== */
 .sidebar {
   width:220px;
   height:100vh;
@@ -27,11 +29,13 @@ body {
   color:white;
 }
 
+/* ===== MAIN ===== */
 .main {
   margin-left:240px;
   padding:20px;
 }
 
+/* ===== CARDS ===== */
 .cards {
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -44,6 +48,7 @@ body {
   border-radius:10px;
 }
 
+/* ===== CHART ===== */
 .chart-box {
   background:#1e293b;
   height:200px;
@@ -52,15 +57,22 @@ body {
   padding:10px;
 }
 
+/* ===== BUTTON ===== */
 button {
   background:#6c5ce7;
   color:white;
   border:none;
-  padding:8px 12px;
-  border-radius:6px;
+  padding:10px 14px;
+  border-radius:8px;
   cursor:pointer;
+  transition:0.2s;
 }
 
+button:hover {
+  opacity:0.9;
+}
+
+/* ===== TABLE ===== */
 table {
   width:100%;
   margin-top:20px;
@@ -75,40 +87,75 @@ th {
 td {
   padding:10px;
   border-bottom:1px solid #333;
-/* Center container */
-.login-box {
-  width: 100%;
-  max-width: 380px;
-  margin: auto;
-  text-align: center;
 }
 
-/* Input fields */
+/* ===================================== */
+/* ===== LOGIN PAGE (IMPROVED UI) ===== */
+/* ===================================== */
+
+/* Center container */
+.login-box {
+  width:100%;
+  max-width:380px;
+  margin:auto;
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+
+/* Glass effect */
+.login-box {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* Inputs */
 .login-box input {
-  width: 100%;
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  box-sizing: border-box;
+  width:100%;
+  padding:14px;
+  margin:12px 0;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  font-size:14px;
+  box-sizing:border-box;
 }
 
 /* Button */
 .login-box button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
 .login-box button:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* ===== OPTIONAL BACKGROUND SUPPORT ===== */
+.orbit {
+  position:absolute;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:50%;
+  animation: rotate 25s linear infinite;
+}
+
+.orbit1 { width:300px; height:300px; }
+.orbit2 { width:500px; height:500px; animation-duration:35s; }
+.orbit3 { width:700px; height:700px; animation-duration:45s; }
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
