@@ -159,3 +159,126 @@ td {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+/* ================================= */
+/* ⭐ DRIFTING STARFIELD BACKGROUND */
+/* ================================= */
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(ellipse at bottom, #0f172a 0%, #020617 100%);
+}
+
+/* STAR LAYERS */
+.stars, .stars2, .stars3 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-repeat: repeat;
+  animation: moveStars linear infinite;
+  z-index: 0;
+}
+
+/* SMALL STARS */
+.stars {
+  background-image: radial-gradient(2px 2px at 20px 30px, white, transparent),
+                    radial-gradient(2px 2px at 100px 150px, white, transparent),
+                    radial-gradient(2px 2px at 200px 80px, white, transparent);
+  animation-duration: 60s;
+  opacity: 0.6;
+}
+
+/* MEDIUM STARS */
+.stars2 {
+  background-image: radial-gradient(3px 3px at 50px 60px, white, transparent),
+                    radial-gradient(3px 3px at 150px 200px, white, transparent);
+  animation-duration: 100s;
+  opacity: 0.4;
+}
+
+/* BIG STARS */
+.stars3 {
+  background-image: radial-gradient(4px 4px at 80px 120px, white, transparent),
+                    radial-gradient(4px 4px at 250px 300px, white, transparent);
+  animation-duration: 140s;
+  opacity: 0.3;
+}
+
+/* MOVEMENT */
+@keyframes moveStars {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ================================= */
+/* 💎 GLASS LOGIN CARD */
+/* ================================= */
+
+.login-card {
+  position: relative;
+  z-index: 2;
+
+  width: 340px;
+  padding: 40px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+
+  text-align: center;
+  color: white;
+}
+
+/* TITLE */
+.login-card h2 {
+  margin-bottom: 25px;
+}
+
+/* INPUTS */
+.login-card input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+
+  border-radius: 10px;
+  border: none;
+  outline: none;
+
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* BUTTON */
+.login-card button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+
+  border-radius: 10px;
+  border: none;
+
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
