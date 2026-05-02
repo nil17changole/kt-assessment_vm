@@ -3,7 +3,11 @@
 <head>
 <title>Assessment Portal</title>
 
+<link rel="stylesheet" href="assets/style.css">
+
 <style>
+
+/* ===== BACKGROUND GRADIENT ===== */
 body {
     margin:0;
     height:100vh;
@@ -13,122 +17,103 @@ body {
     font-family: Arial;
     overflow:hidden;
 
-    /* NEW MODERN ANIMATION */
     background: linear-gradient(270deg, #0f172a, #1e3a8a, #4f46e5, #9333ea);
     background-size: 800% 800%;
     animation: gradientMove 12s ease infinite;
 }
 
-/* Smooth gradient animation */
 @keyframes gradientMove {
     0% { background-position:0% 50%; }
     50% { background-position:100% 50%; }
     100% { background-position:0% 50%; }
 }
 
-/* ===== FLOATING BUBBLES ===== */
-.bg-animation span {
-    position:absolute;
-    display:block;
-    border-radius:50%;
-    background: rgba(255,255,255,0.08);
-    animation: float 12s linear infinite;
+/* ===== ORBIT EFFECT ===== */
+.orbit {
+  position:absolute;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:50%;
+  animation: rotate 25s linear infinite;
 }
 
-/* different sizes */
-.bg-animation span:nth-child(1){
-    width:200px;
-    height:200px;
-    left:10%;
-    animation-duration:15s;
-}
+.orbit1 { width:300px; height:300px; }
+.orbit2 { width:500px; height:500px; animation-duration:35s; }
+.orbit3 { width:700px; height:700px; animation-duration:45s; }
 
-.bg-animation span:nth-child(2){
-    width:300px;
-    height:300px;
-    left:70%;
-    animation-duration:20s;
-}
-
-.bg-animation span:nth-child(3){
-    width:150px;
-    height:150px;
-    left:40%;
-    animation-duration:12s;
-}
-
-/* movement */
-@keyframes float {
-    0% { top:100%; transform:translateY(0) rotate(0deg); }
-    100% { top:-200px; transform:translateY(-1000px) rotate(360deg); }
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* ===== GLASS CARD ===== */
-.card {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(15px);
+.login-card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
     padding:40px;
     border-radius:16px;
-    width:320px;
-    box-shadow:0 15px 40px rgba(0,0,0,0.4);
+    width:340px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
     text-align:center;
-    transform: perspective(1000px) rotateX(0deg);
-    transition: 0.4s;
     color:white;
+    position:relative;
+    z-index:2;
 }
 
-.card:hover {
-    transform: perspective(1000px) rotateX(5deg) scale(1.03);
+.login-card h2 {
+    margin-bottom:20px;
 }
 
-h2 { margin-bottom:20px; }
-
-input {
-    width:80%;
-    padding:12px;
+/* INPUTS */
+.login-card input {
+    width:100%;
+    padding:14px;
     margin:10px 0;
-    border-radius:8px;
+    border-radius:10px;
     border:none;
     outline:none;
+    font-size:14px;
 }
 
-/* button */
-button {
+/* BUTTON */
+.login-card button {
     width:100%;
-    padding:12px;
-    background:#4f46e5;
-    color:white;
+    padding:14px;
+    margin-top:10px;
+    border-radius:10px;
     border:none;
-    border-radius:8px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color:white;
+    font-size:15px;
     cursor:pointer;
     transition:0.3s;
 }
 
-button:hover {
-    background:#312e81;
+.login-card button:hover {
+    transform: translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.3);
 }
+
 </style>
 
 </head>
 
 <body>
 
-<!-- 🔥 ADD THIS (BACKGROUND ANIMATION) -->
-<div class="bg-animation">
-  <span></span>
-  <span></span>
-  <span></span>
+<!-- ORBITS -->
+<div class="orbit orbit1"></div>
+<div class="orbit orbit2"></div>
+<div class="orbit orbit3"></div>
+
+<!-- LOGIN -->
+<div class="login-card">
+  <h2>Assessment Portal</h2>
+
+  <input id="id" placeholder="Employee ID">
+  <input id="pass" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
 </div>
 
-<!-- LOGIN CARD -->
-<div class="card">
-<h2>Assessment Portal</h2>
-
-<input id="id" placeholder="Employee ID">
-<input id="pass" type="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-</div>
 <script src="script.js"></script>
 
 </body>
