@@ -13,18 +13,20 @@ body {
     font-family: Arial;
     overflow:hidden;
 
+    /* NEW MODERN ANIMATION */
     background: linear-gradient(270deg, #0f172a, #1e3a8a, #4f46e5, #9333ea);
     background-size: 800% 800%;
     animation: gradientMove 12s ease infinite;
 }
 
+/* Smooth gradient animation */
 @keyframes gradientMove {
     0% { background-position:0% 50%; }
     50% { background-position:100% 50%; }
     100% { background-position:0% 50%; }
 }
 
-/* FLOATING BUBBLES */
+/* ===== FLOATING BUBBLES ===== */
 .bg-animation span {
     position:absolute;
     display:block;
@@ -33,18 +35,21 @@ body {
     animation: float 12s linear infinite;
 }
 
+/* different sizes */
 .bg-animation span:nth-child(1){
     width:200px;
     height:200px;
     left:10%;
     animation-duration:15s;
 }
+
 .bg-animation span:nth-child(2){
     width:300px;
     height:300px;
     left:70%;
     animation-duration:20s;
 }
+
 .bg-animation span:nth-child(3){
     width:150px;
     height:150px;
@@ -52,12 +57,13 @@ body {
     animation-duration:12s;
 }
 
+/* movement */
 @keyframes float {
     0% { top:100%; transform:translateY(0) rotate(0deg); }
     100% { top:-200px; transform:translateY(-1000px) rotate(360deg); }
 }
 
-/* CARD */
+/* ===== GLASS CARD ===== */
 .card {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(15px);
@@ -66,6 +72,7 @@ body {
     width:320px;
     box-shadow:0 15px 40px rgba(0,0,0,0.4);
     text-align:center;
+    transform: perspective(1000px) rotateX(0deg);
     transition: 0.4s;
     color:white;
 }
@@ -85,6 +92,7 @@ input {
     outline:none;
 }
 
+/* button */
 button {
     width:100%;
     padding:12px;
@@ -105,49 +113,23 @@ button:hover {
 
 <body>
 
+<!-- 🔥 ADD THIS (BACKGROUND ANIMATION) -->
 <div class="bg-animation">
   <span></span>
   <span></span>
   <span></span>
 </div>
 
+<!-- LOGIN CARD -->
 <div class="card">
 <h2>Assessment Portal</h2>
 
-<!-- ✅ FIXED IDs -->
 <input id="id" placeholder="Employee ID">
 <input id="pass" type="password" placeholder="Password">
 
 <button onclick="login()">Login</button>
 </div>
-
-<!-- ✅ INLINE LOGIN FUNCTION -->
-<script>
-async function login() {
-  const id = document.getElementById("id").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!id || !password) {
-    alert("Please enter Employee ID and Password");
-    return;
-  }
-
-  const res = await fetch('/api?action=login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ emp_id, password })
-  });
-
-  const data = await res.json();
-
-  if (res.ok && data.success) {
-    localStorage.setItem("user", JSON.stringify(data.user));
-    window.location.href = "dashboard.html";
-  } else {
-    alert(data.error || "Invalid login");
-  }
-}
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
