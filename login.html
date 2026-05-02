@@ -115,8 +115,8 @@ button:hover {
 <h2>Assessment Portal</h2>
 
 <!-- ✅ FIXED IDs -->
-<input id="emp_id" placeholder="Employee ID">
-<input id="password" type="password" placeholder="Password">
+<input id="id" placeholder="Employee ID">
+<input id="pass" type="password" placeholder="Password">
 
 <button onclick="login()">Login</button>
 </div>
@@ -124,10 +124,10 @@ button:hover {
 <!-- ✅ INLINE LOGIN FUNCTION -->
 <script>
 async function login() {
-  const emp_id = document.getElementById("emp_id").value.trim();
+  const id = document.getElementById("id").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if (!emp_id || !password) {
+  if (!id || !password) {
     alert("Please enter Employee ID and Password");
     return;
   }
