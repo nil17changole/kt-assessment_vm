@@ -1,148 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Manage Users</title>
-  <link rel="stylesheet" href="../assets/style.css">
-</head>
-
-<body>
-
-<div class="container">
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>Super Admin</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="manage_users.html">Users</a>
-    <a href="manage_topics.html">Topics</a>
-    <a href="upload_questions.html">Upload Questions</a>
-    <a href="manage_permissions.html">Permissions</a>
-    <a href="../login.html">Logout</a>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main">
-
-    <h1>Manage Users</h1>
-
-    <!-- Add User -->
-    <div class="card" style="margin-bottom:20px;">
-      <h3>Add User</h3>
-
-      <input id="empId" placeholder="Employee ID"><br><br>
-      <input id="name" placeholder="Name"><br><br>
-      <input id="password" placeholder="Password"><br><br>
-
-      <select id="role">
-        <option value="EMPLOYEE">EMPLOYEE</option>
-        <option value="ADMIN">ADMIN</option>
-        <option value="SUPERADMIN">SUPERADMIN</option>
-      </select><br><br>
-
-      <button onclick="addUser()">Add User</button>
-    </div>
-
-    <!-- Users Table -->
-    <div class="card">
-      <h3>All Users</h3>
-
-      <table border="1" width="100%" style="margin-top:10px;">
-        <thead>
-          <tr>
-            <th>Emp ID</th>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="userTable"></tbody>
-      </table>
-    </div>
-
-  </div>
-</div>
-
 <script>
 
-// Load users
+// ================= LOAD USERS =================
 function loadUsers() {
-  fetch('/api?action=users', {
+  fetch('/api?action=get_users')   // ✅ FIX
+    .then(res => res.json())
+    .then(data => {
+
+      const table = document.getElementById('userTable');
+      table.innerHTML = '';
+
+      data.forEach(user => {
+        table.innerHTML += `
+          <tr>
+            <td>${user.emp_id}</td>
+            <td>${user.name}</td>
+            <td>${user.role}</td>
+            <td>
+              <button onclick="deleteUser('${user.emp_id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+
+    })
+    .catch(err => {
+      console.error("Load Users Error:", err);
+      alert("Failed to load users");
+    });
+}
+
+
+// ================= ADD USER =================
+function addUser() {
+  const emp_id = document.getElementById('empId').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const role = document.getElementById('role').value;
+
+  if (!emp_id || !name || !password) {
+    alert("All fields required");
+    return;
+  }
+
+  fetch('/api?action=add_user', {   // ✅ FIX
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'getUsers' })
+    body: JSON.stringify({ emp_id, name, password, role }) // ✅ FIX
   })
   .then(res => res.json())
   .then(data => {
-
-    const table = document.getElementById('userTable');
-    table.innerHTML = '';
-
-    if (!data.data) return;
-
-    data.data.forEach(user => {
-      table.innerHTML += `
-        <tr>
-          <td>${user.employee_id}</td>
-          <td>${user.name}</td>
-          <td>${user.role}</td>
-          <td>
-            <button onclick="deleteUser('${user.employee_id}')">Delete</button>
-          </td>
-        </tr>
-      `;
-    });
-
-  });
-}
-
-
-// Add user
-function addUser() {
-  const employee_id = document.getElementById('empId').value;
-  const name = document.getElementById('name').value;
-  const password = document.getElementById('password').value;
-  const role = document.getElementById('role').value;
-
-  fetch('/api?action=users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'addUser',
-      payload: { employee_id, name, password, role }
-    })
-  })
-  .then(res => res.json())
-  .then(() => {
-    alert('User Added');
+    alert(data.message || "User added");
     loadUsers();
-  });
-}
-
-
-// Delete user
-function deleteUser(employee_id) {
-  if (!confirm('Delete this user?')) return;
-
-  fetch('/api?action=users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'deleteUser',
-      payload: { employee_id }
-    })
   })
-  .then(res => res.json())
-  .then(() => {
-    alert('User Deleted');
-    loadUsers();
+  .catch(err => {
+    console.error("Add User Error:", err);
+    alert("Failed to add user");
   });
 }
 
 
-// Initial load
+// ================= DELETE USER =================
+function deleteUser(emp_id) {
+
+  alert("Delete not implemented in backend yet"); // ⚠️ honest handling
+
+}
+
+
+// ================= INITIAL LOAD =================
 loadUsers();
 
 </script>
-
-</body>
-</html>
