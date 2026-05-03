@@ -24,9 +24,14 @@
     <h1>Upload Questions (CSV)</h1>
 
     <div class="card">
-      <input id="topic" placeholder="Topic Name"><br><br>
+      
+      <!-- ✅ FIXED INPUT -->
+      <input id="topic" placeholder="Topic Name (exact match)"><br><br>
+
       <input type="file" id="file"><br><br>
+
       <button onclick="uploadCSV()">Upload</button>
+
     </div>
 
   </div>
@@ -35,13 +40,25 @@
 
 <script>
 async function uploadCSV() {
-  const file = document.querySelector("input[type=file]").files[0];
-  const topic = document.querySelector("input").value;
 
-  if (!file) return alert("Select file");
+  const file = document.getElementById("file").files[0];
+
+  // ✅ FIX: correct selector + trim
+  const topic = document.getElementById("topic").value.trim();
+
+  if (!topic) {
+    alert("Enter topic name");
+    return;
+  }
+
+  if (!file) {
+    alert("Select file");
+    return;
+  }
 
   const text = await file.text();
-  const rows = text.split("\n").slice(1); // skip header
+
+  const rows = text.split("\n").slice(1);
 
   const questions = rows
     .filter(r => r.trim() !== "")
@@ -49,15 +66,16 @@ async function uploadCSV() {
       const cols = r.split(",");
 
       return {
-        question: cols[0],
-        option_a: cols[1],
-        option_b: cols[2],
-        option_c: cols[3],
-        option_d: cols[4],
-        correct_option: cols[5]
+        question: cols[0]?.trim(),
+        option_a: cols[1]?.trim(),
+        option_b: cols[2]?.trim(),
+        option_c: cols[3]?.trim(),
+        option_d: cols[4]?.trim(),
+        correct_option: cols[5]?.trim()
       };
     });
 
+  console.log("Sending topic:", topic);
   console.log("Parsed Questions:", questions);
 
   fetch('/api?action=upload_questions', {
