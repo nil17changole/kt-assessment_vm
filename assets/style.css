@@ -5,6 +5,7 @@ body {
   color:white;
 }
 
+/* SIDEBAR */
 .sidebar {
   width:220px;
   height:100vh;
@@ -19,6 +20,7 @@ body {
   color:#cbd5e1;
   text-decoration:none;
   border-radius:8px;
+  margin-bottom:6px;
 }
 
 .sidebar a.active,
@@ -27,43 +29,61 @@ body {
   color:white;
 }
 
+/* MAIN */
 .main {
   margin-left:240px;
   padding:20px;
 }
 
-.cards {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-}
-
+/* CARD */
 .card {
   background:#1e293b;
   padding:20px;
-  border-radius:10px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
-.chart-box {
-  background:#1e293b;
-  height:200px;
-  margin-top:20px;
-  border-radius:10px;
-  padding:10px;
+/* INPUTS */
+input, select {
+  width:100%;
+  padding:12px;
+  margin:8px 0 14px;
+  border-radius:8px;
+  border:1px solid #2d3748;
+  background:#0f172a;
+  color:white;
+  outline:none;
 }
 
+input:focus, select:focus {
+  border-color:#6366f1;
+  box-shadow:0 0 6px rgba(99,102,241,0.4);
+}
+
+/* BUTTON */
 button {
-  background:#6c5ce7;
+  background:linear-gradient(45deg,#6366f1,#8b5cf6);
   color:white;
   border:none;
-  padding:8px 12px;
-  border-radius:6px;
+  padding:10px 14px;
+  border-radius:8px;
   cursor:pointer;
+  font-weight:600;
 }
 
+button:hover {
+  transform:scale(1.05);
+}
+
+/* DELETE BUTTON */
+button.danger {
+  background:#ef4444;
+}
+
+/* TABLE */
 table {
   width:100%;
-  margin-top:20px;
   border-collapse:collapse;
 }
 
@@ -75,40 +95,4 @@ th {
 td {
   padding:10px;
   border-bottom:1px solid #333;
-/* Center container */
-.login-box {
-  width: 100%;
-  max-width: 380px;
-  margin: auto;
-  text-align: center;
-}
-
-/* Input fields */
-.login-box input {
-  width: 100%;
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-/* Button */
-.login-box button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.login-box button:hover {
-  opacity: 0.9;
 }
