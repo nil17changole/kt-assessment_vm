@@ -61,19 +61,22 @@ async function uploadCSV() {
   const rows = text.split("\n").slice(1);
 
   const questions = rows
-    .filter(r => r.trim() !== "")
-    .map(r => {
-      const cols = r.split(",");
+  .filter(r => r.trim() !== "")
+  .map(r => {
+    const cols = r.split(",");
 
-      return {
-        question: cols[0]?.trim(),
-        option_a: cols[1]?.trim(),
-        option_b: cols[2]?.trim(),
-        option_c: cols[3]?.trim(),
-        option_d: cols[4]?.trim(),
-        correct_option: cols[5]?.trim()
-      };
-    });
+    return {
+      question: cols[0]?.trim(),
+      option_a: cols[1]?.trim(),
+      option_b: cols[2]?.trim(),
+      option_c: cols[3]?.trim(),
+      option_d: cols[4]?.trim(),
+      correct_option: cols[5]
+        ?.trim()
+        .match(/[A-D]/i)?.[0]
+        ?.toUpperCase()
+    };
+  });
 
   console.log("Sending topic:", topic);
   console.log("Parsed Questions:", questions);
