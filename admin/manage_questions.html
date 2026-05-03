@@ -12,7 +12,7 @@
 <div class="sidebar">
   <h2>Admin</h2>
   <a href="dashboard.html">Dashboard</a>
-  <a href="manage_questions.html">Questions</a>
+  <a href="manage_questions.html" class="active">Questions</a>
   <a href="assign.html">Assign</a>
   <a href="results.html">Results</a>
 </div>
@@ -22,13 +22,12 @@
 <h1>Manage Questions</h1>
 
 <select id="topic"></select>
-<button onclick="load()">Load</button>
+<button onclick="loadQuestions()">Load</button>
 
 <table>
 <thead>
 <tr>
 <th>Question</th>
-<th>Action</th>
 </tr>
 </thead>
 <tbody id="table"></tbody>
@@ -38,35 +37,46 @@
 </div>
 
 <script>
-function load(){
-  fetch('/api?action=questions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({topic_id:topic.value})
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    table.innerHTML='';
-    d.data.forEach(q=>{
-      table.innerHTML += `
-      <tr>
-        <td>${q.question}</td>
-        <td>
-          <button>Edit</button>
-          <button onclick="del(${q.id})">Delete</button>
-        </td>
-      </tr>`;
+
+// LOAD TOPICS
+function loadTopics() {
+  fetch('/api?action=topics')
+    .then(res => res.json())
+    .then(data => {
+      const t = document.getElementById('topic');
+      t.innerHTML = '<option value="">Select Topic</option>';
+
+      data.forEach(x => {
+        t.innerHTML += `<option value="${x.topic_name}">${x.topic_name}</option>`;
+      });
     });
-  });
 }
 
-function del(id){
-  fetch('/api?action=questions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action:'delete', id})
-  }).then(()=>load());
+
+// LOAD QUESTIONS
+function loadQuestions() {
+  const topic = document.getElementById('topic').value;
+
+  fetch(`/api?action=get_assessment&topic=${topic}`)
+    .then(res => res.json())
+    .then(data => {
+
+      const table = document.getElementById('table');
+      table.innerHTML = '';
+
+      data.questions.forEach(q => {
+        table.innerHTML += `
+          <tr>
+            <td>${q.question}</td>
+          </tr>
+        `;
+      });
+
+    });
 }
+
+loadTopics();
+
 </script>
 
 </body>
