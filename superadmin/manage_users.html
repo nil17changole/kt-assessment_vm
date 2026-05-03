@@ -13,40 +13,46 @@
   <div class="sidebar">
     <h2>Super Admin</h2>
     <a href="dashboard.html">Dashboard</a>
-    <a href="manage_users.html">Users</a>
+    <a href="manage_users.html" class="active">Users</a>
     <a href="manage_topics.html">Topics</a>
     <a href="upload_questions.html">Upload Questions</a>
     <a href="manage_permissions.html">Permissions</a>
     <a href="../login.html">Logout</a>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main -->
   <div class="main">
 
     <h1>Manage Users</h1>
 
     <!-- Add User -->
-    <div class="card" style="margin-bottom:20px;">
+    <div class="card">
       <h3>Add User</h3>
 
-      <input id="empId" placeholder="Employee ID"><br><br>
-      <input id="name" placeholder="Name"><br><br>
-      <input id="password" placeholder="Password"><br><br>
+      <label>Employee ID</label>
+      <input id="empId" placeholder="Enter Employee ID">
 
+      <label>Name</label>
+      <input id="name" placeholder="Enter Name">
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Enter Password">
+
+      <label>Role</label>
       <select id="role">
         <option value="EMPLOYEE">EMPLOYEE</option>
         <option value="ADMIN">ADMIN</option>
         <option value="SUPERADMIN">SUPERADMIN</option>
-      </select><br><br>
+      </select>
 
       <button onclick="addUser()">Add User</button>
     </div>
 
-    <!-- Users Table -->
+    <!-- Table -->
     <div class="card">
       <h3>All Users</h3>
 
-      <table border="1" width="100%" style="margin-top:10px;">
+      <table>
         <thead>
           <tr>
             <th>Emp ID</th>
@@ -64,29 +70,23 @@
 
 <script>
 
-// ================= LOAD USERS =================
+// LOAD USERS
 function loadUsers() {
   fetch('/api?action=get_users')
     .then(res => res.json())
     .then(data => {
 
       const table = document.getElementById('userTable');
-
-      if (!table) {
-        console.error("userTable not found");
-        return;
-      }
-
       table.innerHTML = '';
 
       data.forEach(user => {
         table.innerHTML += `
           <tr>
-            <td>${user.emp_id}</td>
+            <td>${user.employee_id || '-'}</td>
             <td>${user.name}</td>
             <td>${user.role}</td>
             <td>
-              <button onclick="deleteUser('${user.emp_id}')">Delete</button>
+              <button class="danger">Delete</button>
             </td>
           </tr>
         `;
@@ -100,7 +100,7 @@ function loadUsers() {
 }
 
 
-// ================= ADD USER =================
+// ADD USER
 function addUser() {
   const emp_id = document.getElementById('empId').value.trim();
   const name = document.getElementById('name').value.trim();
@@ -119,9 +119,8 @@ function addUser() {
   })
   .then(res => res.json())
   .then(data => {
-    alert(data.message || "User added");
+    alert("User added");
 
-    // Clear fields
     document.getElementById('empId').value = '';
     document.getElementById('name').value = '';
     document.getElementById('password').value = '';
@@ -129,19 +128,13 @@ function addUser() {
     loadUsers();
   })
   .catch(err => {
-    console.error("Add User Error:", err);
+    console.error(err);
     alert("Failed to add user");
   });
 }
 
 
-// ================= DELETE USER =================
-function deleteUser(emp_id) {
-  alert("Delete not implemented in backend yet");
-}
-
-
-// ================= INIT =================
+// INIT
 window.onload = loadUsers;
 
 </script>
