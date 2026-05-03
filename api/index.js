@@ -249,3 +249,90 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
+
+// ================= GET ASSESSMENT =================
+if (action === "get_assessment") {
+  const { topic } = req.query;
+
+  if (!topic) {
+    return res.status(400).json({ error: "Topic required" });
+  }
+
+  // ✅ FIX: use topic_name
+  const { data: topicData, error: topicError } = await supabase
+    .from("topics")
+    .select("id")
+    .eq("topic_name", topic)
+    .single();
+
+  if (topicError || !topicData) {
+    return res.status(400).json({ error: "Topic not found" });
+  }
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("topic_id", topicData.id);
+
+  if (error) throw error;
+
+  return res.status(200).json({
+    questions: data || []
+  });
+}
+
+// ================= ADD QUESTION =================
+if (action === "add_question") {
+  const { topic_id, question, option_a, option_b, option_c, option_d, correct_option } = req.body;
+
+  const { error } = await supabase.from("questions").insert([{
+    topic_id,
+    question,
+    option_a,
+    option_b,
+    option_c,
+    option_d,
+    correct_option
+  }]);
+
+  if (error) throw error;
+
+  return res.status(200).json({ message: "Question added" });
+}
+
+
+// ================= UPDATE QUESTION =================
+if (action === "update_question") {
+  const { id, question, option_a, option_b, option_c, option_d, correct_option } = req.body;
+
+  const { error } = await supabase
+    .from("questions")
+    .update({
+      question,
+      option_a,
+      option_b,
+      option_c,
+      option_d,
+      correct_option
+    })
+    .eq("id", id);
+
+  if (error) throw error;
+
+  return res.status(200).json({ message: "Updated" });
+}
+
+
+// ================= DELETE QUESTION =================
+if (action === "delete_question") {
+  const { id } = req.body;
+
+  const { error } = await supabase
+    .from("questions")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+
+  return res.status(200).json({ message: "Deleted" });
+}
