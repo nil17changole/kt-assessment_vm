@@ -63,7 +63,7 @@ if (action === "add_topic") {
       const { data: topicData, error: topicError } = await supabase
         .from("topics")
         .select("id")
-        .eq("topic", topic)
+        .eq("topic_name", topic)
         .single();
 
       if (topicError || !topicData) {
@@ -117,7 +117,7 @@ if (action === "add_topic") {
       const { data: topicData, error: topicError } = await supabase
         .from("topics")
         .select("id")
-        .eq("topic", topic)
+        .eq("topic_name", topic)
         .single();
 
       if (topicError || !topicData) {
