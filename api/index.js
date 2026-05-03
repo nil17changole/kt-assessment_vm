@@ -180,3 +180,45 @@ if (action === "add_topic") {
     return res.status(500).json({ error: err.message });
   }
 }
+
+// ================= GET ADMINS =================
+if (action === "get_admins") {
+  const { data, error } = await supabase
+    .from("employees")
+    .select("*")
+    .eq("role", "ADMIN");
+
+  if (error) throw error;
+
+  return res.status(200).json(data);
+}
+
+
+// ================= GET TOPICS =================
+if (action === "get_topics") {
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*");
+
+  if (error) throw error;
+
+  return res.status(200).json(data);
+}
+
+
+// ================= ASSIGN PERMISSION =================
+if (action === "assign_permission") {
+  const { admin_id, topic_id } = req.body;
+
+  if (!admin_id || !topic_id) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  const { error } = await supabase
+    .from("admin_topics")
+    .insert([{ admin_id, topic_id }]);
+
+  if (error) throw error;
+
+  return res.status(200).json({ message: "Assigned successfully" });
+}
