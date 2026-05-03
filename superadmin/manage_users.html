@@ -2,11 +2,11 @@
 
 // ================= LOAD USERS =================
 function loadUsers() {
-  fetch('/api?action=get_users')   // ✅ FIX
+  fetch('/api?action=get_users')
     .then(res => res.json())
     .then(data => {
 
-      const table = document.getElementById('userTable');
+      const table = document.getElementById('userTable'); // ✅ FIXED ID
       table.innerHTML = '';
 
       data.forEach(user => {
@@ -42,28 +42,30 @@ function addUser() {
     return;
   }
 
-  fetch('/api?action=add_user', {   // ✅ FIX
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ emp_id, name, password, role }) // ✅ FIX
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.message || "User added");
-    loadUsers();
-  })
-  .catch(err => {
-    console.error("Add User Error:", err);
-    alert("Failed to add user");
-  });
+  fetch('/api?action=add_user')
+    .then(() => {
+      // 🔥 Important: backend expects POST with body
+      return fetch('/api?action=add_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emp_id, name, password, role })
+      });
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "User added");
+      loadUsers();
+    })
+    .catch(err => {
+      console.error("Add User Error:", err);
+      alert("Failed to add user");
+    });
 }
 
 
 // ================= DELETE USER =================
 function deleteUser(emp_id) {
-
-  alert("Delete not implemented in backend yet"); // ⚠️ honest handling
-
+  alert("Delete not implemented in backend yet");
 }
 
 
