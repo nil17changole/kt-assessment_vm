@@ -7,169 +7,74 @@ export default async function handler(req, res) {
 
     // ================= USERS =================
     if (action === "get_users") {
-      const { data, error } = await supabase.from("employees").select("*");
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*");
+
       if (error) throw error;
+
       return res.status(200).json(data);
     }
 
     if (action === "add_user") {
-  const { emp_id, name, password, role } = req.body;
+      const { emp_id, name, password, role } = req.body;
 
-  if (!emp_id || !name || !password) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
+      if (!emp_id || !name || !password) {
+        return res.status(400).json({ error: "Missing fields" });
+      }
 
-  const { error } = await supabase.from("employees").insert([
-    {
-      employee_id: emp_id,   // ✅ correct column
-      name,
-      password,
-      role
+      const { error } = await supabase
+        .from("employees")
+        .insert([{
+          employee_id: emp_id,
+          name,
+          password,
+          role
+        }]);
+
+      if (error) throw error;
+
+      return res.status(200).json({ message: "User added" });
     }
-  ]);
 
-  if (error) {
-    console.error("ADD USER ERROR:", error);
-    return res.status(500).json({ error: error.message });
-  }
-
-  return res.status(200).json({ message: "User added" });
-}
-    
     // ================= TOPICS =================
-if (action === "topics") {
-  const { data, error } = await supabase
-    .from("topics")
-    .select("*")
-    .order("id", { ascending: true });
-
-  if (error) throw error;
-
-  return res.status(200).json(data);
-}
-
-if (action === "add_topic") {
-  const { topic } = req.body;
-
-  if (!topic) {
-    return res.status(400).json({ error: "Topic is required" });
-  }
-
-  const { error } = await supabase
-    .from("topics")
-    .insert([{ topic_name: topic }]);  // ✅ FIXED FINAL
-
-  if (error) throw error;
-
-  return res.status(200).json({ message: "Topic added" });
-}
-
-    // ================= QUESTIONS UPLOAD =================
-    if (action === "upload_questions") {
-      const { topic, questions } = req.body;
-
-      if (!topic || !questions || !questions.length) {
-        return res.status(400).json({ error: "Invalid data format" });
-      }
-
-      // Step 1: get topic_id from topics table
-      const { data: topicData, error: topicError } = await supabase
-        .from("topics")
-        .select("id")
-        .eq("topic_name", topic)
-        .single();
-
-      if (topicError || !topicData) {
-        return res.status(400).json({ error: "Topic not found" });
-      }
-
-      const topic_id = topicData.id;
-
-      // Step 2: prepare payload
-      const payload = questions.map(q => ({
-        topic_id,
-        question: q.question,
-        option_a: q.option_a,
-        option_b: q.option_b,
-        option_c: q.option_c,
-        option_d: q.option_d,
-        correct_option: q.correct_option
-      }));
-
-      const { error } = await supabase.from("questions").insert(payload);
-
-      if (error) throw error;
-
-      return res.status(200).json({ message: "Uploaded successfully" });
-    }
-
-    // ================= DASHBOARD =================
-    if (action === "dashboard") {
-      const users = await supabase.from("employees").select("*", { count: "exact", head: true });
-      const topics = await supabase.from("topics").select("*", { count: "exact", head: true });
-      const questions = await supabase.from("questions").select("*", { count: "exact", head: true });
-      const attempts = await supabase.from("results").select("*", { count: "exact", head: true });
-
-      return res.status(200).json({
-        users: users.count || 0,
-        topics: topics.count || 0,
-        questions: questions.count || 0,
-        attempts: attempts.count || 0
-      });
-    }
-
-    // ================= ASSESSMENT =================
-    if (action === "get_assessment") {
-      const { topic } = req.query;
-
-      if (!topic) {
-        return res.status(400).json({ error: "Topic required" });
-      }
-
-      // Get topic_id
-      const { data: topicData, error: topicError } = await supabase
-        .from("topics")
-        .select("id")
-        .eq("topic_name", topic)
-        .single();
-
-      if (topicError || !topicData) {
-        return res.status(400).json({ error: "Topic not found" });
-      }
-
+    if (action === "get_topics") {
       const { data, error } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("topic_id", topicData.id);
+        .from("topics")
+        .select("*");
 
       if (error) throw error;
 
-      return res.status(200).json({
-        topic,
-        duration: 30,
-        questions: data
-      });
+      return res.status(200).json(data);
     }
 
-    // ================= SUBMIT =================
-    if (action === "submit") {
-      const { answers, questions } = req.body;
+    // ================= ADMINS =================
+    if (action === "get_admins") {
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("role", "ADMIN");
 
-      if (!answers || !questions) {
-        return res.status(400).json({ error: "Invalid submission" });
+      if (error) throw error;
+
+      return res.status(200).json(data);
+    }
+
+    // ================= PERMISSIONS =================
+    if (action === "assign_permission") {
+      const { admin_id, topic_id } = req.body;
+
+      if (!admin_id || !topic_id) {
+        return res.status(400).json({ error: "Missing fields" });
       }
 
-      let score = 0;
+      const { error } = await supabase
+        .from("admin_topics")
+        .insert([{ admin_id, topic_id }]);
 
-      questions.forEach((q, i) => {
-        if (answers[i] === q.correct_option) score++;
-      });
+      if (error) throw error;
 
-      score = (score / questions.length) * 100;
-
-      await supabase.from("results").insert([{ score }]);
-
-      return res.status(200).json({ score });
+      return res.status(200).json({ message: "Assigned successfully" });
     }
 
     // ================= DEFAULT =================
@@ -177,48 +82,10 @@ if (action === "add_topic") {
 
   } catch (err) {
     console.error("API ERROR:", err);
-    return res.status(500).json({ error: err.message });
+
+    // ✅ IMPORTANT FIX: ALWAYS RETURN JSON
+    return res.status(500).json({
+      error: err.message || "Internal Server Error"
+    });
   }
-}
-
-// ================= GET ADMINS =================
-if (action === "get_admins") {
-  const { data, error } = await supabase
-    .from("employees")
-    .select("*")
-    .eq("role", "ADMIN");
-
-  if (error) throw error;
-
-  return res.status(200).json(data);
-}
-
-
-// ================= GET TOPICS =================
-if (action === "get_topics") {
-  const { data, error } = await supabase
-    .from("topics")
-    .select("*");
-
-  if (error) throw error;
-
-  return res.status(200).json(data);
-}
-
-
-// ================= ASSIGN PERMISSION =================
-if (action === "assign_permission") {
-  const { admin_id, topic_id } = req.body;
-
-  if (!admin_id || !topic_id) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
-
-  const { error } = await supabase
-    .from("admin_topics")
-    .insert([{ admin_id, topic_id }]);
-
-  if (error) throw error;
-
-  return res.status(200).json({ message: "Assigned successfully" });
 }
