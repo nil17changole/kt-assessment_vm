@@ -128,15 +128,24 @@ export default async function handler(req, res) {
     }
 
     // ================= ADMIN TOPICS =================
-    if (action === "get_admin_topics") {
-      const { data, error } = await supabase
-        .from("topics")
-        .select("*");
+if (action === "get_admin_topics") {
 
-      if (error) throw error;
+  const { data, error } = await supabase
+    .from("admin_topics")
+    .select(`
+      topic_id,
+      topics ( id, topic_name )
+    `);
 
-      return res.status(200).json(data);
-    }
+  if (error) throw error;
+
+  const result = data.map(d => ({
+    id: d.topics.id,
+    topic_name: d.topics.topic_name
+  }));
+
+  return res.status(200).json(result);
+}
 
     // ================= ASSIGN =================
     if (action === "assign") {
@@ -356,4 +365,29 @@ if (action === "get_results") {
   }));
 
   return res.status(200).json(formatted);
+}
+
+// ================= GET TOPICS =================
+if (action === "topics") {
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*")
+    .order("id");
+
+  if (error) throw error;
+
+  return res.status(200).json(data || []);
+}
+
+// ================= GET EMPLOYEES =================
+if (action === "get_employees") {
+
+  const { data, error } = await supabase
+    .from("employees")
+    .select("employee_id, name")
+    .eq("role", "EMPLOYEE");
+
+  if (error) throw error;
+
+  return res.status(200).json(data || []);
 }
