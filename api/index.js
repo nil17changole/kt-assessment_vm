@@ -336,3 +336,24 @@ if (action === "delete_question") {
 
   return res.status(200).json({ message: "Deleted" });
 }
+
+// ================= GET RESULTS =================
+if (action === "get_results") {
+  const { data, error } = await supabase
+    .from("attempts")
+    .select(`
+      score,
+      employees(name),
+      topics(topic_name)
+    `);
+
+  if (error) throw error;
+
+  const formatted = data.map(r => ({
+    name: r.employees?.name,
+    topic: r.topics?.topic_name,
+    score: r.score
+  }));
+
+  return res.status(200).json(formatted);
+}
