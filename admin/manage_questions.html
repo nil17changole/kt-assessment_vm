@@ -24,10 +24,25 @@
 <select id="topic"></select>
 <button onclick="loadQuestions()">Load</button>
 
+<hr>
+
+<h3>Add New Question</h3>
+
+<input id="q" placeholder="Question"><br>
+<input id="a" placeholder="Option A"><br>
+<input id="b" placeholder="Option B"><br>
+<input id="c" placeholder="Option C"><br>
+<input id="d" placeholder="Option D"><br>
+<input id="correct" placeholder="Correct (A/B/C/D)"><br>
+<button onclick="addQuestion()">Add</button>
+
+<hr>
+
 <table>
 <thead>
 <tr>
 <th>Question</th>
+<th>Actions</th>
 </tr>
 </thead>
 <tbody id="table"></tbody>
@@ -38,44 +53,104 @@
 
 <script>
 
-// LOAD TOPICS
-function loadTopics() {
-  fetch('/api?action=topics')
-    .then(res => res.json())
-    .then(data => {
-      const t = document.getElementById('topic');
-      t.innerHTML = '<option value="">Select Topic</option>';
+let currentTopicId = null;
 
-      data.forEach(x => {
-        t.innerHTML += `<option value="${x.topic_name}">${x.topic_name}</option>`;
-      });
-    });
-}
+// LOAD TOPICS
+fetch('/api?action=topics')
+.then(r=>r.json())
+.then(data=>{
+  topic.innerHTML = data.map(t=>`
+    <option value="${t.id}" data-name="${t.topic_name}">
+      ${t.topic_name}
+    </option>
+  `).join('');
+});
 
 
 // LOAD QUESTIONS
 function loadQuestions() {
-  const topic = document.getElementById('topic').value;
+  const selected = topic.options[topic.selectedIndex];
+  const topicName = selected.getAttribute("data-name");
+  currentTopicId = topic.value;
 
-  fetch(`/api?action=get_assessment&topic=${topic}`)
-    .then(res => res.json())
-    .then(data => {
+  fetch(`/api?action=get_assessment&topic=${topicName}`)
+  .then(r=>r.json())
+  .then(data=>{
 
-      const table = document.getElementById('table');
-      table.innerHTML = '';
+    const table = document.getElementById('table');
+    table.innerHTML = '';
 
-      data.questions.forEach(q => {
-        table.innerHTML += `
-          <tr>
-            <td>${q.question}</td>
-          </tr>
-        `;
-      });
-
+    (data.questions || []).forEach(q=>{
+      table.innerHTML += `
+      <tr>
+        <td>
+          <input value="${q.question}" id="q${q.id}">
+        </td>
+        <td>
+          <button onclick="update(${q.id})">Save</button>
+          <button onclick="del(${q.id})">Delete</button>
+        </td>
+      </tr>
+      `;
     });
+
+  });
 }
 
-loadTopics();
+
+// ADD QUESTION
+function addQuestion() {
+
+  fetch('/api?action=add_question',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      topic_id: currentTopicId,
+      question: q.value,
+      option_a: a.value,
+      option_b: b.value,
+      option_c: c.value,
+      option_d: d.value,
+      correct_option: correct.value
+    })
+  })
+  .then(()=> {
+    alert("Added");
+    loadQuestions();
+  });
+}
+
+
+// UPDATE
+function update(id) {
+  const question = document.getElementById(`q${id}`).value;
+
+  fetch('/api?action=update_question',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      id,
+      question
+    })
+  })
+  .then(()=> {
+    alert("Updated");
+    loadQuestions();
+  });
+}
+
+
+// DELETE
+function del(id) {
+  if(!confirm("Delete?")) return;
+
+  fetch('/api?action=delete_question',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ id })
+  })
+  .then(()=> loadQuestions());
+}
 
 </script>
 
