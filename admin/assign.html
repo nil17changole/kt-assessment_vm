@@ -43,7 +43,10 @@ fetch('/api?action=topics')
 function assign(){
   alert("Assignment feature not implemented in backend yet");
 }
-
+function logout(){
+  localStorage.clear();
+  window.location.href = "../login.html";
+}
 </script>
 
 </body>
