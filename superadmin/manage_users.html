@@ -1,3 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Super Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="manage_users.html">Users</a>
+    <a href="manage_topics.html">Topics</a>
+    <a href="upload_questions.html">Upload Questions</a>
+    <a href="manage_permissions.html">Permissions</a>
+    <a href="../login.html">Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <h1>Manage Users</h1>
+
+    <!-- Add User -->
+    <div class="card" style="margin-bottom:20px;">
+      <h3>Add User</h3>
+
+      <input id="empId" placeholder="Employee ID"><br><br>
+      <input id="name" placeholder="Name"><br><br>
+      <input id="password" placeholder="Password"><br><br>
+
+      <select id="role">
+        <option value="EMPLOYEE">EMPLOYEE</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="SUPERADMIN">SUPERADMIN</option>
+      </select><br><br>
+
+      <button onclick="addUser()">Add User</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+      <h3>All Users</h3>
+
+      <table border="1" width="100%" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th>Emp ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
 <script>
 
 // ================= LOAD USERS =================
@@ -6,7 +70,13 @@ function loadUsers() {
     .then(res => res.json())
     .then(data => {
 
-      const table = document.getElementById('userTable'); // ✅ FIXED ID
+      const table = document.getElementById('userTable');
+
+      if (!table) {
+        console.error("userTable not found");
+        return;
+      }
+
       table.innerHTML = '';
 
       data.forEach(user => {
@@ -42,24 +112,26 @@ function addUser() {
     return;
   }
 
-  fetch('/api?action=add_user')
-    .then(() => {
-      // 🔥 Important: backend expects POST with body
-      return fetch('/api?action=add_user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emp_id, name, password, role })
-      });
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert(data.message || "User added");
-      loadUsers();
-    })
-    .catch(err => {
-      console.error("Add User Error:", err);
-      alert("Failed to add user");
-    });
+  fetch('/api?action=add_user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emp_id, name, password, role })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message || "User added");
+
+    // Clear fields
+    document.getElementById('empId').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('password').value = '';
+
+    loadUsers();
+  })
+  .catch(err => {
+    console.error("Add User Error:", err);
+    alert("Failed to add user");
+  });
 }
 
 
@@ -69,7 +141,10 @@ function deleteUser(emp_id) {
 }
 
 
-// ================= INITIAL LOAD =================
-loadUsers();
+// ================= INIT =================
+window.onload = loadUsers;
 
 </script>
+
+</body>
+</html>
