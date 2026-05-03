@@ -13,15 +13,28 @@ export default async function handler(req, res) {
     }
 
     if (action === "add_user") {
-      const { emp_id, name, password, role } = req.body;
+  const { emp_id, name, password, role } = req.body;
 
-      const { error } = await supabase.from("employees").insert([
-        { emp_id, name, password, role }
-      ]);
+  if (!emp_id || !name || !password) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
 
-      if (error) throw error;
-      return res.status(200).json({ message: "User added" });
+  const { error } = await supabase.from("employees").insert([
+    {
+      employee_id: emp_id,   // ✅ correct column
+      name,
+      password,
+      role
     }
+  ]);
+
+  if (error) {
+    console.error("ADD USER ERROR:", error);
+    return res.status(500).json({ error: error.message });
+  }
+
+  return res.status(200).json({ message: "User added" });
+}
     
     // ================= TOPICS =================
 if (action === "topics") {
