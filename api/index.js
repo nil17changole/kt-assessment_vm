@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     // ================= USERS =================
     if (action === "get_users") {
-      const { data, error } = await supabase.from("users").select("*");
+      const { data, error } = await supabase.from("employees").select("*");
       if (error) throw error;
       return res.status(200).json(data);
     }
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     if (action === "add_user") {
       const { emp_id, name, password, role } = req.body;
 
-      const { error } = await supabase.from("users").insert([
+      const { error } = await supabase.from("employees").insert([
         { emp_id, name, password, role }
       ]);
 
@@ -92,7 +92,7 @@ if (action === "add_topic") {
 
     // ================= DASHBOARD =================
     if (action === "dashboard") {
-      const users = await supabase.from("users").select("*", { count: "exact", head: true });
+      const users = await supabase.from("employees").select("*", { count: "exact", head: true });
       const topics = await supabase.from("topics").select("*", { count: "exact", head: true });
       const questions = await supabase.from("questions").select("*", { count: "exact", head: true });
       const attempts = await supabase.from("results").select("*", { count: "exact", head: true });
