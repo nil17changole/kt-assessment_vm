@@ -10,61 +10,42 @@
 <div class="sidebar">
   <h2>Admin</h2>
   <a href="dashboard.html">Dashboard</a>
-  <a href="questions.html">Questions</a>
+  <a href="manage_questions.html">Questions</a>
   <a href="assign.html">Assign</a>
   <a href="results.html" class="active">Results</a>
-  <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
 
 <h1>Results</h1>
 
-<div class="filters">
-  <input id="name" placeholder="Filter by Name">
-  <input id="topic" placeholder="Filter by Topic">
-  <button onclick="load()">Filter</button>
-</div>
-
 <table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Topic</th>
-      <th>Score</th>
-    </tr>
-  </thead>
-  <tbody id="data"></tbody>
+<thead>
+<tr>
+<th>Score</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
 </table>
 
 </div>
 
 <script>
-function logout(){
-  localStorage.clear();
-  window.location.href = "../login.html";
-}
 
 function load(){
-  fetch('/api?action=get_assignments')
+  fetch('/api?action=dashboard')
   .then(r=>r.json())
   .then(d=>{
-    let filtered = d.filter(x =>
-      x.employee.toLowerCase().includes(name.value.toLowerCase()) &&
-      x.topic.toLowerCase().includes(topic.value.toLowerCase())
-    );
-
-    data.innerHTML = filtered.map(r=>`
+    data.innerHTML = `
       <tr>
-        <td>${r.employee}</td>
-        <td>${r.topic}</td>
-        <td>${r.score || 0}%</td>
+        <td>Total Attempts: ${d.attempts}</td>
       </tr>
-    `).join('');
+    `;
   });
 }
 
 load();
+
 </script>
 
 </body>
