@@ -46,7 +46,10 @@ ans:ans.value
 })
 }).then(()=>history.back());
 }
-
+function logout(){
+  localStorage.clear();
+  window.location.href = "../login.html";
+}
 </script>
 
 </body>
