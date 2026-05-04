@@ -7,16 +7,16 @@ export default async function handler(req, res) {
 
     // ================= USERS =================
     if (action === "get_users") {
-      const { data, error } = await supabase.from("users").select("*");
+      const { data, error } = await supabase.from("employees").select("*");
       if (error) throw error;
-      return res.status(200).json(data);
+      return res.status(200).json(data || []);
     }
 
     if (action === "add_user") {
-      const { emp_id, name, password, role } = req.body;
+      const { employee_id, name, password, role } = req.body;
 
-      const { error } = await supabase.from("users").insert([
-        { emp_id, name, password, role }
+      const { error } = await supabase.from("employees").insert([
+        { employee_id, name, password, role }
       ]);
 
       if (error) throw error;
@@ -24,12 +24,12 @@ export default async function handler(req, res) {
     }
 
     if (action === "delete_user") {
-      const { emp_id } = req.body;
+      const { employee_id } = req.body;
 
       const { error } = await supabase
-        .from("users")
+        .from("employees")
         .delete()
-        .eq("emp_id", emp_id);
+        .eq("employee_id", employee_id);
 
       if (error) throw error;
 
@@ -118,7 +118,7 @@ export default async function handler(req, res) {
     // ================= EMPLOYEES =================
     if (action === "get_employees") {
       const { data, error } = await supabase
-        .from("users")
+        .from("employees")
         .select("*")
         .eq("role", "EMPLOYEE");
 
@@ -238,7 +238,7 @@ if (action === "get_admin_topics") {
 
     // ================= DASHBOARD =================
     if (action === "dashboard") {
-      const users = await supabase.from("users").select("*", { count: "exact", head: true });
+      const users = await supabase.from("employees").select("*", { count: "exact", head: true });
       const topics = await supabase.from("topics").select("*", { count: "exact", head: true });
       const questions = await supabase.from("questions").select("*", { count: "exact", head: true });
       const attempts = await supabase.from("results").select("*", { count: "exact", head: true });
