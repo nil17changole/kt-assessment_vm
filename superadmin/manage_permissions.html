@@ -40,24 +40,22 @@
 </div>
 
 <script>
+const adminSelect = document.getElementById("admin");
+const topicSelect = document.getElementById("topic");
 
-// ================= LOAD ADMINS =================
+// LOAD ADMINS
 function loadAdmins() {
   fetch('/api?action=get_admins')
     .then(res => res.json())
     .then(data => {
-
-      const adminSelect = document.getElementById('admin');
       adminSelect.innerHTML = '<option value="">Select Admin</option>';
 
-      data.forEach(u => {
+      data.forEach(a => {
         adminSelect.innerHTML += `
-          <option value="${u.id}">
-            ${u.name} (${u.employee_id})
-          </option>
-        `;
+          <option value="${a.employee_id}">
+            ${a.name}
+          </option>`;
       });
-
     })
     .catch(err => {
       console.error("Admin Load Error:", err);
@@ -65,24 +63,19 @@ function loadAdmins() {
     });
 }
 
-
-// ================= LOAD TOPICS =================
+// LOAD TOPICS
 function loadTopics() {
-  fetch('/api?action=get_topics')
+  fetch('/api?action=topics') // ✅ GET (NO BODY)
     .then(res => res.json())
     .then(data => {
-
-      const topicSelect = document.getElementById('topic');
       topicSelect.innerHTML = '<option value="">Select Topic</option>';
 
       data.forEach(t => {
         topicSelect.innerHTML += `
           <option value="${t.id}">
             ${t.topic_name}
-          </option>
-        `;
+          </option>`;
       });
-
     })
     .catch(err => {
       console.error("Topic Load Error:", err);
@@ -90,25 +83,19 @@ function loadTopics() {
     });
 }
 
-
-// ================= ASSIGN =================
-function assignPermission() {
-  const admin_id = document.getElementById('admin').value;
-  const topic_id = document.getElementById('topic').value;
-
-  if (!admin_id || !topic_id) {
-    alert("Please select both Admin and Topic");
+// ASSIGN TOPIC
+function assign() {
+  if (!adminSelect.value || !topicSelect.value) {
+    alert("Select admin and topic");
     return;
   }
 
-  fetch('/api?action=assign_permission', {
+  fetch('/api?action=assign_topic', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      admin_id,
-      topic_id
+      admin_id: adminSelect.value,
+      topic_id: topicSelect.value
     })
   })
   .then(res => res.json())
@@ -121,13 +108,11 @@ function assignPermission() {
   });
 }
 
-
-// ================= INIT =================
+// INIT
 window.onload = () => {
   loadAdmins();
   loadTopics();
 };
-
 </script>
 
 </body>
