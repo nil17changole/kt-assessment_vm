@@ -9,7 +9,6 @@
 
 <div class="container">
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Super Admin</h2>
     <a href="dashboard.html">Dashboard</a>
@@ -20,34 +19,45 @@
     <a href="../login.html">Logout</a>
   </div>
 
-  <!-- Main -->
   <div class="main">
 
     <h1>Manage Topics</h1>
 
-    <!-- Add Topic -->
     <div class="card">
+
       <h3>Add Topic</h3>
 
-      <div style="display:flex; gap:10px;">
-        <input id="topicName" placeholder="Enter Topic Name" style="flex:1;">
-        <button onclick="addTopic()">Add</button>
+      <div style="display:flex;gap:10px;">
+        <input
+          id="topicName"
+          placeholder="Enter Topic Name"
+          style="flex:1;"
+        >
+
+        <button onclick="addTopic()">
+          Add
+        </button>
       </div>
+
     </div>
 
-    <!-- Topics List -->
     <div class="card">
+
       <h3>All Topics</h3>
 
       <table width="100%">
+
         <thead>
           <tr>
             <th>ID</th>
             <th>Topic Name</th>
           </tr>
         </thead>
+
         <tbody id="topicTable"></tbody>
+
       </table>
+
     </div>
 
   </div>
@@ -56,46 +66,119 @@
 
 <script>
 
-const topicTable = document.getElementById("topicTable");
+const topicTable =
+  document.getElementById(
+    "topicTable"
+  );
 
-function loadTopics() {
-  fetch('/api?action=topics')
-    .then(r => r.json())
-    .then(data => {
-      topicTable.innerHTML = '';
+async function loadTopics() {
 
-      data.forEach(t => {
-        topicTable.innerHTML += `
-          <tr>
-            <td>${t.id}</td>
-            <td>${t.topic_name}</td>
-          </tr>
-        `;
-      });
+  try {
+
+    const response =
+      await fetch(
+        '/api?action=topics'
+      );
+
+    const data =
+      await response.json();
+
+    topicTable.innerHTML = '';
+
+    data.forEach(topic => {
+
+      topicTable.innerHTML += `
+        <tr>
+          <td>${topic.id}</td>
+          <td>${topic.topic_name}</td>
+        </tr>
+      `;
+
     });
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert(
+      'Failed to load topics'
+    );
+
+  }
 }
 
-function addTopic(){
-  const topic = document.getElementById('topicName').value.trim();
+async function addTopic() {
 
-  if (!topic) {
-    alert("Enter topic name");
+  const topic_name =
+    document
+      .getElementById(
+        'topicName'
+      )
+      .value
+      .trim();
+
+  if (!topic_name) {
+
+    alert(
+      'Enter topic name'
+    );
+
     return;
   }
 
-  fetch('/api?action=add_topic',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ topic })
-  })
-  .then(r => r.json())
-  .then(() => {
-    document.getElementById('topicName').value = '';
+  try {
+
+    const response =
+      await fetch(
+        '/api?action=add_topic',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+            'application/json'
+          },
+
+          body: JSON.stringify({
+            topic_name
+          })
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (
+      result.success === false
+    ) {
+
+      alert(
+        result.message ||
+        'Failed'
+      );
+
+      return;
+    }
+
+    document.getElementById(
+      'topicName'
+    ).value = '';
+
     loadTopics();
-  });
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert(
+      'Failed to add topic'
+    );
+
+  }
 }
 
-loadTopics();
+window.onload =
+  loadTopics;
 
 </script>
 
