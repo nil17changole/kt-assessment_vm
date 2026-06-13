@@ -168,7 +168,7 @@ button {
 let questions=[], index=0, answers={}, review={}, submitted=false, time=0;
 
 // ================= LOAD =================
-fetch('/api?action=get_assessment')
+fetch(   '/api?action=get_assessment&employee_id=' +   localStorage.getItem('employee_id') )
 .then(r=>r.json())
 .then(d=>{
 document.getElementById("title").innerText="Assessment: "+d.topic;
@@ -284,9 +284,11 @@ fetch('/api?action=submit',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body: JSON.stringify({
-answers,
-questions,
-time_taken: time
+  employee_id:
+    localStorage.getItem('employee_id'),
+  answers,
+  questions,
+  time_taken: time
 })
 })
 .then(r=>r.json())
