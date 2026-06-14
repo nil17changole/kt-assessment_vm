@@ -17,25 +17,34 @@
 
 <div class="main">
 
-<h1>Assign Assessment</h1>
+  <h1>Assign Assessment</h1>
 
-<div class="form-box">
+  <div class="form-box">
 
-<label>Employee</label> <select id="employee"></select>
+```
+<label>Employee</label>
+<select id="employee">
+  <option value="">Loading Employees...</option>
+</select>
 
-<label>Topic</label> <select id="topic"></select>
+<label>Topic</label>
+<select id="topic">
+  <option value="">Loading Topics...</option>
+</select>
 
-<label>Duration (Minutes)</label> <input
- type="number"
- id="duration"
- min="1"
- placeholder="Duration">
+<label>Duration (Minutes)</label>
+<input
+  type="number"
+  id="duration"
+  min="1"
+  placeholder="Duration in minutes">
 
-  <button onclick="assignAssessment()">
-    Assign Assessment
-  </button>
+<button onclick="assignAssessment()">
+  Assign Assessment
+</button>
+```
 
-</div>
+  </div>
 
 </div>
 
@@ -57,15 +66,17 @@ async function loadEmployees() {
   try {
 
     const response =
-      await fetch(
-        '/api?action=get_employees'
-      );
+      await fetch('/api?action=get_employees');
 
     const data =
       await response.json();
 
     employeeSelect.innerHTML =
       '<option value="">Select Employee</option>';
+
+    if (!Array.isArray(data)) {
+      return;
+    }
 
     data.forEach(emp => {
 
@@ -80,10 +91,12 @@ async function loadEmployees() {
 
   } catch (err) {
 
-    console.error(err);
+    console.error(
+      'Employee Load Error:',
+      err
+    );
 
     alert('Failed to load employees');
-
   }
 }
 
@@ -97,15 +110,17 @@ async function loadTopics() {
   try {
 
     const response =
-      await fetch(
-        '/api?action=topics'
-      );
+      await fetch('/api?action=topics');
 
     const data =
       await response.json();
 
     topicSelect.innerHTML =
       '<option value="">Select Topic</option>';
+
+    if (!Array.isArray(data)) {
+      return;
+    }
 
     data.forEach(topic => {
 
@@ -119,16 +134,18 @@ async function loadTopics() {
 
   } catch (err) {
 
-    console.error(err);
+    console.error(
+      'Topic Load Error:',
+      err
+    );
 
     alert('Failed to load topics');
-
   }
 }
 
 
 // ======================
-// ASSIGN
+// ASSIGN ASSESSMENT
 // ======================
 
 async function assignAssessment() {
@@ -147,52 +164,47 @@ async function assignAssessment() {
     );
 
   if (!employee_id) {
-
-    alert('Select employee');
-
+    alert('Please select employee');
     return;
   }
 
   if (!topic_id) {
-
-    alert('Select topic');
-
+    alert('Please select topic');
     return;
   }
 
   if (!duration || duration <= 0) {
-
     alert('Enter valid duration');
-
     return;
   }
 
   try {
 
     const response =
-      await fetch(
-        '/api?action=assign',
-        {
-          method: 'POST',
+      await fetch('/api?action=assign', {
 
-          headers: {
-            'Content-Type':
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
             'application/json'
-          },
+        },
 
-          body: JSON.stringify({
-            employee_id,
-            topic_id,
-            duration,
-            is_open: true
-          })
-        }
-      );
+        body: JSON.stringify({
+          employee_id,
+          topic_id,
+          duration,
+          is_open: true
+        })
+
+      });
 
     const result =
       await response.json();
 
-    if (result.success === false) {
+    if (
+      result.success === false
+    ) {
 
       alert(
         result.message ||
@@ -206,14 +218,20 @@ async function assignAssessment() {
       'Assessment assigned successfully'
     );
 
+    document.getElementById(
+      'duration'
+    ).value = '';
+
   } catch (err) {
 
-    console.error(err);
-
-    alert(
-      'Assignment failed'
+    console.error(
+      'Assignment Error:',
+      err
     );
 
+    alert(
+      'Failed to assign assessment'
+    );
   }
 }
 
@@ -238,7 +256,6 @@ function logout() {
 window.onload = () => {
 
   loadEmployees();
-
   loadTopics();
 
 };
